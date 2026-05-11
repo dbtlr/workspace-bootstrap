@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "oxc", "import", "unicorn", "promise", "node", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+    "style": "warn",
+    "pedantic": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "rules": {
+    "no-ternary": "off",
+    "sort-imports": "off",
+    "no-magic-numbers": "off",
+    "import/no-nodejs-modules": "off",
+    "typescript/consistent-type-definitions": ["warn", "type"],
+    "unicorn/no-null": "off",
+    "no-duplicate-imports": ["warn", { "allowSeparateTypeImports": true }]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "max-statements": "off"
+      }
+    }
+  ]
+}

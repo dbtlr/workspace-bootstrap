@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+.env*
+.worktrees/
+CLAUDE.local.md
+.claude/settings.local.json
+*.log
+coverage/
+.vite/

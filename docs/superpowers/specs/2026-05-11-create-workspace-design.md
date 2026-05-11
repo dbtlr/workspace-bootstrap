@@ -14,13 +14,13 @@ The CLI itself is built with TypeScript, pnpm, and Vite+ (using `vp pack` for bu
 
 - Bootstrap a new project directory at `<cwd>/<name>` with sensible modern defaults.
 - Support TypeScript, Rust, and Python — alone or in polyglot combinations.
-- Work fully interactively (clack prompts) *or* fully non-interactively (flags), with every prompt skippable via a corresponding flag.
+- Work fully interactively (clack prompts) _or_ fully non-interactively (flags), with every prompt skippable via a corresponding flag.
 - Make zero filesystem assumptions outside the resolved `--cwd`.
 - Leave a structure that scales to future per-pattern scaffolding (CLI apps, web apps with frameworks, etc.) without a refactor.
 
 ### Non-goals (v1)
 
-- Scaffolding *patterns* beyond "blank project" (CLI patterns, web app frameworks, etc.) — architecture supports this, but not v1.
+- Scaffolding _patterns_ beyond "blank project" (CLI patterns, web app frameworks, etc.) — architecture supports this, but not v1.
 - A config file (`workspace-bootstrap.config.ts`) — deferred.
 - LICENSE generation — explicitly skipped.
 - A `--force` overwrite flag — explicitly skipped.
@@ -116,6 +116,7 @@ type Contributor = (opts: Options) => Contribution;
 `buildPlan(opts)` calls every applicable contributor (shared, ci, git, github, plus the relevant language contributors) and concatenates their contributions. Dep lists are merged per language and consumed by the generators.
 
 To add a future pattern (e.g., "TS CLI app"):
+
 1. Add `kind` to the Options zod schema, one clack prompt, one CLI flag.
 2. Drop a file in `plan/contributors/patterns/`.
 3. Wire it into the contributor list.
@@ -133,29 +134,29 @@ npm create workspace [name] -- [options]
 
 ### Options
 
-| Flag | Type | Prompt? | Default |
-|---|---|---|---|
-| `[name]` positional or `--name <name>` | string | yes | — (required) |
-| `--description <text>` | string | yes | `""` |
-| `-C, --cwd <path>` | path | no | `process.cwd()` |
-| `--language <lang>` (repeatable) | `typescript`\|`rust`\|`python` | yes (multi-select) | — (required) |
-| `--monorepo <kind>` | `turbo`\|`nx`\|`none` | yes if TS or polyglot | `turbo` if polyglot, else `none` |
-| `--package-manager <pm>` | `pnpm`\|`bun` | yes if TS | `pnpm` |
-| `--bun-test <choice>` | `vitest`\|`bun`\|`both` | yes if TS+bun | `vitest` |
-| `--rust-workspace` / `--no-rust-workspace` | bool | yes if Rust and not polyglot | `false` |
-| `--python-workspace` / `--no-python-workspace` | bool | yes if Python and not polyglot | `false` |
-| `--ci` / `--no-ci` | bool | yes interactive only | `false` non-interactive |
-| `--github` / `--no-github` | bool | yes interactive only if `gh` on PATH | `false` non-interactive |
-| `--github-visibility <v>` | `private`\|`public`\|`internal` | yes if `--github` | `private` |
-| `--github-owner <owner>` | string | yes if `--github` | `gh`'s default owner |
-| `--git` / `--no-git` | bool | no | `true` |
-| `--commit` / `--no-commit` | bool | no | `true` |
-| `--install` / `--no-install` | bool | no | `true` |
-| `-y, --yes` | bool | — | accept all defaults; skip prompts for anything not required |
-| `--non-interactive` | bool | — | force non-interactive; error if a required field is missing |
-| `--verbose` | bool | — | `false` |
-| `-h, --help` | — | — | print options table and exit |
-| `-v, --version` | — | — | print version and exit |
+| Flag                                           | Type                            | Prompt?                              | Default                                                     |
+| ---------------------------------------------- | ------------------------------- | ------------------------------------ | ----------------------------------------------------------- |
+| `[name]` positional or `--name <name>`         | string                          | yes                                  | — (required)                                                |
+| `--description <text>`                         | string                          | yes                                  | `""`                                                        |
+| `-C, --cwd <path>`                             | path                            | no                                   | `process.cwd()`                                             |
+| `--language <lang>` (repeatable)               | `typescript`\|`rust`\|`python`  | yes (multi-select)                   | — (required)                                                |
+| `--monorepo <kind>`                            | `turbo`\|`nx`\|`none`           | yes if TS or polyglot                | `turbo` if polyglot, else `none`                            |
+| `--package-manager <pm>`                       | `pnpm`\|`bun`                   | yes if TS                            | `pnpm`                                                      |
+| `--bun-test <choice>`                          | `vitest`\|`bun`\|`both`         | yes if TS+bun                        | `vitest`                                                    |
+| `--rust-workspace` / `--no-rust-workspace`     | bool                            | yes if Rust and not polyglot         | `false`                                                     |
+| `--python-workspace` / `--no-python-workspace` | bool                            | yes if Python and not polyglot       | `false`                                                     |
+| `--ci` / `--no-ci`                             | bool                            | yes interactive only                 | `false` non-interactive                                     |
+| `--github` / `--no-github`                     | bool                            | yes interactive only if `gh` on PATH | `false` non-interactive                                     |
+| `--github-visibility <v>`                      | `private`\|`public`\|`internal` | yes if `--github`                    | `private`                                                   |
+| `--github-owner <owner>`                       | string                          | yes if `--github`                    | `gh`'s default owner                                        |
+| `--git` / `--no-git`                           | bool                            | no                                   | `true`                                                      |
+| `--commit` / `--no-commit`                     | bool                            | no                                   | `true`                                                      |
+| `--install` / `--no-install`                   | bool                            | no                                   | `true`                                                      |
+| `-y, --yes`                                    | bool                            | —                                    | accept all defaults; skip prompts for anything not required |
+| `--non-interactive`                            | bool                            | —                                    | force non-interactive; error if a required field is missing |
+| `--verbose`                                    | bool                            | —                                    | `false`                                                     |
+| `-h, --help`                                   | —                               | —                                    | print options table and exit                                |
+| `-v, --version`                                | —                               | —                                    | print version and exit                                      |
 
 ### Interactivity rules
 
@@ -195,9 +196,9 @@ See `templates/` tree in the Module structure section above.
 type RenderContext = {
   name: string;
   description: string;
-  author: { name: string; email: string };  // from `git config user.name/user.email`
+  author: { name: string; email: string }; // from `git config user.name/user.email`
   year: number;
-  options: Options;  // full options object available for conditionals
+  options: Options; // full options object available for conditionals
 };
 ```
 
@@ -288,7 +289,7 @@ In order, each step skippable via its flag:
    - If TS is in the language list: `vp config` (installed in step 4 alongside the TS install).
    - Otherwise: `lefthook install` against the lefthook config dropped by the scaffold step.
 
-If any step fails, scaffold is *not* rolled back. The user gets a clear error message describing which step failed, what command ran, and what to do next. Scaffolded files remain in place. Hooks not being installed (because of `--no-install`) is logged but not an error — the user can re-run the install/hook commands manually.
+If any step fails, scaffold is _not_ rolled back. The user gets a clear error message describing which step failed, what command ran, and what to do next. Scaffolded files remain in place. Hooks not being installed (because of `--no-install`) is logged but not an error — the user can re-run the install/hook commands manually.
 
 ## Tool versions: `mise.toml`
 
