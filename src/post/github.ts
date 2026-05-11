@@ -30,9 +30,9 @@ export const githubCommandsFor = (opts: Options, hasOriginRemote: boolean): Gith
   return [{ args, tool: 'gh' }];
 };
 
-const hasOriginRemote = async (targetDir: string): Promise<boolean> => {
+const getOriginRemote = async (targetDir: string): Promise<string | null> => {
   const result = await exec('git', ['remote', 'get-url', 'origin'], { cwd: targetDir });
-  return result.code === 0;
+  return result.code === 0 ? result.stdout.trim() : null;
 };
 
 const runGithub = async (targetDir: string, opts: Options, log: Logger): Promise<void> => {
@@ -46,14 +46,13 @@ const runGithub = async (targetDir: string, opts: Options, log: Logger): Promise
     return;
   }
 
-  const existing = await hasOriginRemote(targetDir);
-  if (existing) {
-    const url = await exec('git', ['remote', 'get-url', 'origin'], { cwd: targetDir });
-    log.info(`origin remote already configured: ${url.stdout.trim()}`);
+  const existingRemote = await getOriginRemote(targetDir);
+  if (existingRemote !== null) {
+    log.info(`origin remote already configured: ${existingRemote}`);
     return;
   }
 
-  const cmds = githubCommandsFor(opts, existing);
+  const cmds = githubCommandsFor(opts, false);
   for (const { tool, args } of cmds) {
     log.info(`Running ${tool} ${args.join(' ')}…`);
     // eslint-disable-next-line no-await-in-loop
