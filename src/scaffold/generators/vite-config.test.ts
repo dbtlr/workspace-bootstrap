@@ -46,4 +46,17 @@ describe(renderViteConfig, () => {
     expect(out).toContain('printWidth: 100');
     expect(out).toContain('singleQuote: true');
   });
+
+  it('includes the full lint rule set (plugins, categories, jest-off, test override)', () => {
+    const out = renderViteConfig(baseOptions);
+    expect(out).toContain(
+      "plugins: ['eslint', 'typescript', 'oxc', 'import', 'unicorn', 'promise', 'node', 'vitest']",
+    );
+    expect(out).toContain('categories:');
+    expect(out).toContain("correctness: 'error'");
+    expect(out).toContain("'import/no-named-export': 'off'");
+    expect(out).toContain("'jest/valid-title': 'off'");
+    expect(out).toContain("'vitest/no-importing-vitest-globals': 'off'");
+    expect(out).toContain("files: ['**/*.test.ts']");
+  });
 });
