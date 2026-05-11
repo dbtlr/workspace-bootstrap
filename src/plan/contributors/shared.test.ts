@@ -46,4 +46,30 @@ describe("sharedContributor", () => {
     expect(claude?.content).toBe("@AGENTS.md\n");
     expect(claude?.raw).toBe(true);
   });
+
+  it("includes Rust gitignore entries when rust is selected", () => {
+    const contribution = sharedContributor({ ...baseOptions, languages: ["rust"] });
+    const gitignore = contribution.files.find((f) => f.target === ".gitignore");
+    expect(gitignore?.content).toContain("target/");
+    expect(gitignore?.content).toContain("Cargo.lock");
+  });
+
+  it("includes Python gitignore entries when python is selected", () => {
+    const contribution = sharedContributor({ ...baseOptions, languages: ["python"] });
+    const gitignore = contribution.files.find((f) => f.target === ".gitignore");
+    expect(gitignore?.content).toContain("__pycache__/");
+    expect(gitignore?.content).toContain(".venv/");
+  });
+
+  it("includes fragments for every selected language in polyglot mode", () => {
+    const contribution = sharedContributor({
+      ...baseOptions,
+      languages: ["typescript", "rust", "python"],
+      monorepo: "turbo",
+    });
+    const gitignore = contribution.files.find((f) => f.target === ".gitignore");
+    expect(gitignore?.content).toContain("node_modules/");
+    expect(gitignore?.content).toContain("target/");
+    expect(gitignore?.content).toContain("__pycache__/");
+  });
 });
