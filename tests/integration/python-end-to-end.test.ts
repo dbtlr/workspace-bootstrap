@@ -62,7 +62,25 @@ describe("Python-only end-to-end scaffold", () => {
 
     const rootPy = readFileSync(join(target, "pyproject.toml"), "utf8");
     expect(rootPy).toContain("[tool.uv.workspace]");
+    expect(rootPy).toContain('members = ["packages/*"]');
     expect(existsSync(join(target, "packages/pythy/pyproject.toml"))).toBe(true);
     expect(existsSync(join(target, "packages/pythy/src/pythy/__init__.py"))).toBe(true);
+  });
+
+  it("polyglot + pythonWorkspace uses py/* members glob (not packages/*)", async () => {
+    const opts: Options = {
+      ...baseOpts,
+      languages: ["typescript", "python"],
+      monorepo: "turbo",
+      pythonWorkspace: true,
+    };
+    const cwd = mkdtempSync(join(tmpdir(), "py-poly-ws-"));
+    const target = join(cwd, opts.name);
+    const plan = buildPlan({ ...opts, cwd }, contributors);
+    await executePlan(plan, target, { ...opts, cwd });
+
+    const rootPy = readFileSync(join(target, "pyproject.toml"), "utf8");
+    expect(rootPy).toContain('members = ["py/*"]');
+    expect(rootPy).not.toContain("packages/*");
   });
 });

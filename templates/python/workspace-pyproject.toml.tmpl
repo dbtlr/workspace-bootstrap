@@ -5,4 +5,4 @@ description = "<%= it.description %>"
 requires-python = ">=3.13"
 
 [tool.uv.workspace]
-members = ["packages/*"]
+members = ["<% if (it.options.languages.length > 1) { %>py/*<% } else { %>packages/*<% } %>"]
