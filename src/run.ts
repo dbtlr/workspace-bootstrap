@@ -2,6 +2,7 @@ import { existsSync, statSync } from 'node:fs';
 import { isAbsolute, join, resolve } from 'node:path';
 
 import type { Options, PartialOptions } from './options.js';
+import ciContributor from './plan/contributors/ci.js';
 import pythonContributor from './plan/contributors/languages/python.js';
 import rustContributor from './plan/contributors/languages/rust.js';
 import tsContributor from './plan/contributors/languages/ts.js';
@@ -9,6 +10,7 @@ import monorepoContributor from './plan/contributors/monorepo.js';
 import sharedContributor from './plan/contributors/shared.js';
 import { buildPlan } from './plan/index.js';
 import runGit from './post/git.js';
+import runGithub from './post/github.js';
 import { runInstall } from './post/install.js';
 import { runPrompts } from './prompts/index.js';
 import type { RunPromptsOptions } from './prompts/index.js';
@@ -54,6 +56,7 @@ const run = async (partial: PartialOptions, promptOpts: RunPromptsOptions): Prom
   const plan = buildPlan(opts, [
     sharedContributor,
     monorepoContributor,
+    ciContributor,
     tsContributor,
     rustContributor,
     pythonContributor,
@@ -65,6 +68,9 @@ const run = async (partial: PartialOptions, promptOpts: RunPromptsOptions): Prom
 
   if (opts.git) {
     await runGit(targetDir, opts, log);
+  }
+  if (opts.github) {
+    await runGithub(targetDir, opts, log);
   }
   if (opts.install) {
     await runInstall(targetDir, opts, log);
