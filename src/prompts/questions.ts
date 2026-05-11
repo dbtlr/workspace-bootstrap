@@ -4,9 +4,11 @@ import { validateName } from "../options.js";
 
 export const applyDefaults = (partial: PartialOptions): PartialOptions => {
   const isPolyglot = (partial.languages?.length ?? 0) > 1;
-  return {
+  const monorepoDefault = isPolyglot ? "turbo" : "none";
+
+  const filled: PartialOptions = {
     description: "",
-    monorepo: isPolyglot ? "turbo" : "none",
+    monorepo: monorepoDefault,
     packageManager: "pnpm",
     bunTest: "vitest",
     rustWorkspace: false,
@@ -20,6 +22,14 @@ export const applyDefaults = (partial: PartialOptions): PartialOptions => {
     verbose: false,
     ...partial,
   };
+
+  // Polyglot forces a monorepo. If partial explicitly sets monorepo: 'none' with polyglot,
+  // override it to the default. This is the one place we override an explicit value.
+  if (isPolyglot && filled.monorepo === "none") {
+    filled.monorepo = "turbo";
+  }
+
+  return filled;
 };
 
 const cancelIfNeeded = <T>(value: T | symbol): T => {

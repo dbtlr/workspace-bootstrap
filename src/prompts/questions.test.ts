@@ -34,4 +34,22 @@ describe("applyDefaults", () => {
     expect(out.packageManager).toBe("bun");
     expect(out.monorepo).toBe("nx");
   });
+
+  it("overrides monorepo: none to turbo when polyglot", () => {
+    const out = applyDefaults({
+      cwd: "/tmp",
+      languages: ["typescript", "rust"],
+      monorepo: "none",
+    });
+    expect(out.monorepo).toBe("turbo");
+  });
+
+  it("preserves monorepo: nx for polyglot when explicitly set", () => {
+    const out = applyDefaults({
+      cwd: "/tmp",
+      languages: ["typescript", "rust"],
+      monorepo: "nx",
+    });
+    expect(out.monorepo).toBe("nx");
+  });
 });

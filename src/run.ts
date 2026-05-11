@@ -6,7 +6,10 @@ import type { Options, PartialOptions } from "./options.js";
 import { runPrompts, type RunPromptsOptions } from "./prompts/index.js";
 import { buildPlan } from "./plan/index.js";
 import { sharedContributor } from "./plan/contributors/shared.js";
+import { monorepoContributor } from "./plan/contributors/monorepo.js";
 import { tsContributor } from "./plan/contributors/languages/ts.js";
+import { rustContributor } from "./plan/contributors/languages/rust.js";
+import { pythonContributor } from "./plan/contributors/languages/python.js";
 import { executePlan } from "./scaffold/index.js";
 import { runGit } from "./post/git.js";
 import { runInstall } from "./post/install.js";
@@ -49,7 +52,13 @@ export const run = async (
 
   const author = await detectAuthor(opts.cwd);
 
-  const plan = buildPlan(opts, [sharedContributor, tsContributor]);
+  const plan = buildPlan(opts, [
+    sharedContributor,
+    monorepoContributor,
+    tsContributor,
+    rustContributor,
+    pythonContributor,
+  ]);
 
   log.info(`Scaffolding ${opts.name} → ${targetDir}`);
   await executePlan(plan, targetDir, opts, { author });
