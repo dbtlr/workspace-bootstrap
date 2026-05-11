@@ -78,8 +78,12 @@ const boolFromPair = (
   disable: unknown,
   defaultValue: boolean | undefined,
 ): boolean | undefined => {
+  // Citty auto-negates `--no-X` to `args.X = false`, so check that form first.
   if (enable === true) {
     return true;
+  }
+  if (enable === false) {
+    return false;
   }
   if (disable === true) {
     return false;
