@@ -80,30 +80,30 @@ build/
 Add these `it` blocks inside the existing `describe('sharedContributor', () => { ... })` block:
 
 ```ts
-it("includes Rust gitignore entries when rust is selected", () => {
-  const contribution = sharedContributor({ ...baseOptions, languages: ["rust"] });
-  const gitignore = contribution.files.find((f) => f.target === ".gitignore");
-  expect(gitignore?.content).toContain("target/");
-  expect(gitignore?.content).toContain("Cargo.lock");
+it('includes Rust gitignore entries when rust is selected', () => {
+  const contribution = sharedContributor({ ...baseOptions, languages: ['rust'] });
+  const gitignore = contribution.files.find((f) => f.target === '.gitignore');
+  expect(gitignore?.content).toContain('target/');
+  expect(gitignore?.content).toContain('Cargo.lock');
 });
 
-it("includes Python gitignore entries when python is selected", () => {
-  const contribution = sharedContributor({ ...baseOptions, languages: ["python"] });
-  const gitignore = contribution.files.find((f) => f.target === ".gitignore");
-  expect(gitignore?.content).toContain("__pycache__/");
-  expect(gitignore?.content).toContain(".venv/");
+it('includes Python gitignore entries when python is selected', () => {
+  const contribution = sharedContributor({ ...baseOptions, languages: ['python'] });
+  const gitignore = contribution.files.find((f) => f.target === '.gitignore');
+  expect(gitignore?.content).toContain('__pycache__/');
+  expect(gitignore?.content).toContain('.venv/');
 });
 
-it("includes fragments for every selected language in polyglot mode", () => {
+it('includes fragments for every selected language in polyglot mode', () => {
   const contribution = sharedContributor({
     ...baseOptions,
-    languages: ["typescript", "rust", "python"],
-    monorepo: "turbo",
+    languages: ['typescript', 'rust', 'python'],
+    monorepo: 'turbo',
   });
-  const gitignore = contribution.files.find((f) => f.target === ".gitignore");
-  expect(gitignore?.content).toContain("node_modules/");
-  expect(gitignore?.content).toContain("target/");
-  expect(gitignore?.content).toContain("__pycache__/");
+  const gitignore = contribution.files.find((f) => f.target === '.gitignore');
+  expect(gitignore?.content).toContain('node_modules/');
+  expect(gitignore?.content).toContain('target/');
+  expect(gitignore?.content).toContain('__pycache__/');
 });
 ```
 
@@ -117,7 +117,7 @@ Expected: 3 new tests FAIL (gitignore.rust and gitignore.python don't exist, so 
 Open `src/plan/contributors/shared.ts`. The existing `buildGitignore` uses:
 
 ```ts
-parts.push(readFragment(`gitignore.${lang === "typescript" ? "ts" : lang}`));
+parts.push(readFragment(`gitignore.${lang === 'typescript' ? 'ts' : lang}`));
 ```
 
 For Rust and Python, this resolves to `gitignore.rust` and `gitignore.python` respectively — which we just created. **No code change required in `shared.ts`.**
@@ -153,72 +153,72 @@ git commit -m "feat(plan): add Rust and Python gitignore fragments"
 Create `src/post/install.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
-import type { Options } from "../options.js";
-import { installCommandsFor } from "./install.js";
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../options.js';
+import { installCommandsFor } from './install.js';
 
 const baseOptions: Options = {
-  name: "foo",
-  description: "",
-  cwd: "/tmp",
-  languages: ["typescript"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "none",
+  name: 'foo',
+  description: '',
+  cwd: '/tmp',
+  languages: ['typescript'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'none',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
   verbose: false,
 };
 
-describe("installCommandsFor", () => {
-  it("returns pnpm install for TS+pnpm", () => {
+describe('installCommandsFor', () => {
+  it('returns pnpm install for TS+pnpm', () => {
     const cmds = installCommandsFor(baseOptions);
     expect(cmds).toEqual([
-      { tool: "pnpm", args: ["install"] },
-      { tool: "pnpm", args: ["exec", "vp", "config"] },
+      { tool: 'pnpm', args: ['install'] },
+      { tool: 'pnpm', args: ['exec', 'vp', 'config'] },
     ]);
   });
 
-  it("returns bun install for TS+bun (vitest)", () => {
-    const cmds = installCommandsFor({ ...baseOptions, packageManager: "bun" });
+  it('returns bun install for TS+bun (vitest)', () => {
+    const cmds = installCommandsFor({ ...baseOptions, packageManager: 'bun' });
     expect(cmds).toEqual([
-      { tool: "bun", args: ["install"] },
-      { tool: "bun", args: ["exec", "vp", "config"] },
+      { tool: 'bun', args: ['install'] },
+      { tool: 'bun', args: ['exec', 'vp', 'config'] },
     ]);
   });
 
-  it("omits vp config when bunTest is bun-only", () => {
-    const cmds = installCommandsFor({ ...baseOptions, packageManager: "bun", bunTest: "bun" });
-    expect(cmds).toEqual([{ tool: "bun", args: ["install"] }]);
+  it('omits vp config when bunTest is bun-only', () => {
+    const cmds = installCommandsFor({ ...baseOptions, packageManager: 'bun', bunTest: 'bun' });
+    expect(cmds).toEqual([{ tool: 'bun', args: ['install'] }]);
   });
 
-  it("returns cargo fetch for Rust-only", () => {
-    const cmds = installCommandsFor({ ...baseOptions, languages: ["rust"] });
-    expect(cmds).toEqual([{ tool: "cargo", args: ["fetch"] }]);
+  it('returns cargo fetch for Rust-only', () => {
+    const cmds = installCommandsFor({ ...baseOptions, languages: ['rust'] });
+    expect(cmds).toEqual([{ tool: 'cargo', args: ['fetch'] }]);
   });
 
-  it("returns uv sync for Python-only", () => {
-    const cmds = installCommandsFor({ ...baseOptions, languages: ["python"] });
-    expect(cmds).toEqual([{ tool: "uv", args: ["sync"] }]);
+  it('returns uv sync for Python-only', () => {
+    const cmds = installCommandsFor({ ...baseOptions, languages: ['python'] });
+    expect(cmds).toEqual([{ tool: 'uv', args: ['sync'] }]);
   });
 
-  it("chains pnpm install + cargo fetch + uv sync for full polyglot", () => {
+  it('chains pnpm install + cargo fetch + uv sync for full polyglot', () => {
     const cmds = installCommandsFor({
       ...baseOptions,
-      languages: ["typescript", "rust", "python"],
-      monorepo: "turbo",
+      languages: ['typescript', 'rust', 'python'],
+      monorepo: 'turbo',
     });
     expect(cmds).toEqual([
-      { tool: "pnpm", args: ["install"] },
-      { tool: "pnpm", args: ["exec", "vp", "config"] },
-      { tool: "cargo", args: ["fetch"] },
-      { tool: "uv", args: ["sync"] },
+      { tool: 'pnpm', args: ['install'] },
+      { tool: 'pnpm', args: ['exec', 'vp', 'config'] },
+      { tool: 'cargo', args: ['fetch'] },
+      { tool: 'uv', args: ['sync'] },
     ]);
   });
 });
@@ -232,30 +232,30 @@ Expected: FAIL — `installCommandsFor` does not exist yet.
 - [ ] **Step 3: Replace `src/post/install.ts`**
 
 ```ts
-import type { Options } from "../options.js";
-import { exec, which } from "../util/exec.js";
-import type { Logger } from "../util/log.js";
+import type { Options } from '../options.js';
+import { exec, which } from '../util/exec.js';
+import type { Logger } from '../util/log.js';
 
 export type InstallCommand = { tool: string; args: string[] };
 
 export const installCommandsFor = (opts: Options): InstallCommand[] => {
   const cmds: InstallCommand[] = [];
 
-  if (opts.languages.includes("typescript")) {
+  if (opts.languages.includes('typescript')) {
     const pm = opts.packageManager;
-    cmds.push({ tool: pm, args: ["install"] });
-    const usingVitePlus = !(pm === "bun" && opts.bunTest === "bun");
+    cmds.push({ tool: pm, args: ['install'] });
+    const usingVitePlus = !(pm === 'bun' && opts.bunTest === 'bun');
     if (usingVitePlus) {
-      cmds.push({ tool: pm, args: ["exec", "vp", "config"] });
+      cmds.push({ tool: pm, args: ['exec', 'vp', 'config'] });
     }
   }
 
-  if (opts.languages.includes("rust")) {
-    cmds.push({ tool: "cargo", args: ["fetch"] });
+  if (opts.languages.includes('rust')) {
+    cmds.push({ tool: 'cargo', args: ['fetch'] });
   }
 
-  if (opts.languages.includes("python")) {
-    cmds.push({ tool: "uv", args: ["sync"] });
+  if (opts.languages.includes('python')) {
+    cmds.push({ tool: 'uv', args: ['sync'] });
   }
 
   return cmds;
@@ -264,21 +264,21 @@ export const installCommandsFor = (opts: Options): InstallCommand[] => {
 export const runInstall = async (targetDir: string, opts: Options, log: Logger): Promise<void> => {
   const cmds = installCommandsFor(opts);
   if (cmds.length === 0) {
-    log.debug("No install commands for selected languages.");
+    log.debug('No install commands for selected languages.');
     return;
   }
 
   for (const { tool, args } of cmds) {
     if (!(await which(tool))) {
       log.warn(
-        `${tool} not found on PATH — skipping \`${tool} ${args.join(" ")}\`. Run it manually.`,
+        `${tool} not found on PATH — skipping \`${tool} ${args.join(' ')}\`. Run it manually.`,
       );
       continue;
     }
-    log.info(`Running ${tool} ${args.join(" ")}…`);
+    log.info(`Running ${tool} ${args.join(' ')}…`);
     const result = await exec(tool, args, { cwd: targetDir, inherit: true });
     if (result.code !== 0) {
-      log.error(`${tool} ${args.join(" ")} failed (exit ${result.code}).`);
+      log.error(`${tool} ${args.join(' ')} failed (exit ${result.code}).`);
       return;
     }
   }
@@ -404,86 +404,86 @@ The contributor that wires Rust templates into the plan. Handles three modes: si
 Create `src/plan/sub-paths.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
-import type { Options } from "../options.js";
-import { getSubPath, isPolyglot } from "./sub-paths.js";
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../options.js';
+import { getSubPath, isPolyglot } from './sub-paths.js';
 
 const baseOptions: Options = {
-  name: "foo",
-  description: "",
-  cwd: "/tmp",
-  languages: ["typescript"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "none",
+  name: 'foo',
+  description: '',
+  cwd: '/tmp',
+  languages: ['typescript'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'none',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
   verbose: false,
 };
 
-describe("isPolyglot", () => {
-  it("returns false for single language", () => {
+describe('isPolyglot', () => {
+  it('returns false for single language', () => {
     expect(isPolyglot(baseOptions)).toBe(false);
   });
 
-  it("returns true for 2+ languages", () => {
-    expect(isPolyglot({ ...baseOptions, languages: ["typescript", "rust"] })).toBe(true);
+  it('returns true for 2+ languages', () => {
+    expect(isPolyglot({ ...baseOptions, languages: ['typescript', 'rust'] })).toBe(true);
   });
 });
 
-describe("getSubPath", () => {
-  it("returns empty string for TS without monorepo", () => {
-    expect(getSubPath("typescript", baseOptions)).toBe("");
+describe('getSubPath', () => {
+  it('returns empty string for TS without monorepo', () => {
+    expect(getSubPath('typescript', baseOptions)).toBe('');
   });
 
-  it("returns apps/<name> for TS in monorepo", () => {
-    expect(getSubPath("typescript", { ...baseOptions, monorepo: "turbo" })).toBe("apps/foo");
+  it('returns apps/<name> for TS in monorepo', () => {
+    expect(getSubPath('typescript', { ...baseOptions, monorepo: 'turbo' })).toBe('apps/foo');
   });
 
-  it("returns empty string for Rust without workspace and not polyglot", () => {
-    expect(getSubPath("rust", { ...baseOptions, languages: ["rust"] })).toBe("");
+  it('returns empty string for Rust without workspace and not polyglot', () => {
+    expect(getSubPath('rust', { ...baseOptions, languages: ['rust'] })).toBe('');
   });
 
-  it("returns crates/<name> for Rust with workspace", () => {
-    expect(getSubPath("rust", { ...baseOptions, languages: ["rust"], rustWorkspace: true })).toBe(
-      "crates/foo",
+  it('returns crates/<name> for Rust with workspace', () => {
+    expect(getSubPath('rust', { ...baseOptions, languages: ['rust'], rustWorkspace: true })).toBe(
+      'crates/foo',
     );
   });
 
-  it("returns crates/<name> for Rust in polyglot", () => {
+  it('returns crates/<name> for Rust in polyglot', () => {
     expect(
-      getSubPath("rust", {
+      getSubPath('rust', {
         ...baseOptions,
-        languages: ["typescript", "rust"],
-        monorepo: "turbo",
+        languages: ['typescript', 'rust'],
+        monorepo: 'turbo',
       }),
-    ).toBe("crates/foo");
+    ).toBe('crates/foo');
   });
 
-  it("returns empty string for Python without workspace and not polyglot", () => {
-    expect(getSubPath("python", { ...baseOptions, languages: ["python"] })).toBe("");
+  it('returns empty string for Python without workspace and not polyglot', () => {
+    expect(getSubPath('python', { ...baseOptions, languages: ['python'] })).toBe('');
   });
 
-  it("returns packages/<name> for Python with workspace", () => {
+  it('returns packages/<name> for Python with workspace', () => {
     expect(
-      getSubPath("python", { ...baseOptions, languages: ["python"], pythonWorkspace: true }),
-    ).toBe("packages/foo");
+      getSubPath('python', { ...baseOptions, languages: ['python'], pythonWorkspace: true }),
+    ).toBe('packages/foo');
   });
 
-  it("returns py/<name> for Python in polyglot", () => {
+  it('returns py/<name> for Python in polyglot', () => {
     expect(
-      getSubPath("python", {
+      getSubPath('python', {
         ...baseOptions,
-        languages: ["typescript", "python"],
-        monorepo: "turbo",
+        languages: ['typescript', 'python'],
+        monorepo: 'turbo',
       }),
-    ).toBe("py/foo");
+    ).toBe('py/foo');
   });
 });
 ```
@@ -496,31 +496,31 @@ Expected: FAIL — module not found.
 - [ ] **Step 3: Implement `src/plan/sub-paths.ts`**
 
 ```ts
-import type { Language, Options } from "../options.js";
+import type { Language, Options } from '../options.js';
 
 export const isPolyglot = (opts: Options): boolean => opts.languages.length > 1;
 
 export const getSubPath = (lang: Language, opts: Options): string => {
   const polyglot = isPolyglot(opts);
 
-  if (lang === "typescript") {
-    if (opts.monorepo === "none") return "";
+  if (lang === 'typescript') {
+    if (opts.monorepo === 'none') return '';
     return `apps/${opts.name}`;
   }
 
-  if (lang === "rust") {
+  if (lang === 'rust') {
     if (polyglot) return `crates/${opts.name}`;
     if (opts.rustWorkspace) return `crates/${opts.name}`;
-    return "";
+    return '';
   }
 
-  if (lang === "python") {
+  if (lang === 'python') {
     if (polyglot) return `py/${opts.name}`;
     if (opts.pythonWorkspace) return `packages/${opts.name}`;
-    return "";
+    return '';
   }
 
-  return "";
+  return '';
 };
 ```
 
@@ -534,85 +534,85 @@ Expected: PASS (11 tests).
 Create `src/plan/contributors/languages/rust.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
-import type { Options } from "../../../options.js";
-import { rustContributor } from "./rust.js";
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../../../options.js';
+import { rustContributor } from './rust.js';
 
 const baseOptions: Options = {
-  name: "foo",
-  description: "",
-  cwd: "/tmp",
-  languages: ["rust"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "none",
+  name: 'foo',
+  description: '',
+  cwd: '/tmp',
+  languages: ['rust'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'none',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
   verbose: false,
 };
 
-describe("rustContributor", () => {
-  it("returns empty contribution when rust is not in languages", () => {
-    const contribution = rustContributor({ ...baseOptions, languages: ["typescript"] });
+describe('rustContributor', () => {
+  it('returns empty contribution when rust is not in languages', () => {
+    const contribution = rustContributor({ ...baseOptions, languages: ['typescript'] });
     expect(contribution.files).toHaveLength(0);
   });
 
-  it("contributes Cargo.toml + src/main.rs + rustfmt + clippy at root for single-crate", () => {
+  it('contributes Cargo.toml + src/main.rs + rustfmt + clippy at root for single-crate', () => {
     const contribution = rustContributor(baseOptions);
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("Cargo.toml");
-    expect(targets).toContain("src/main.rs");
-    expect(targets).toContain("rustfmt.toml");
-    expect(targets).toContain("clippy.toml");
-    expect(targets).not.toContain("crates/foo/Cargo.toml");
+    expect(targets).toContain('Cargo.toml');
+    expect(targets).toContain('src/main.rs');
+    expect(targets).toContain('rustfmt.toml');
+    expect(targets).toContain('clippy.toml');
+    expect(targets).not.toContain('crates/foo/Cargo.toml');
   });
 
-  it("contributes workspace Cargo.toml + crates/<name>/ when rustWorkspace is true", () => {
+  it('contributes workspace Cargo.toml + crates/<name>/ when rustWorkspace is true', () => {
     const contribution = rustContributor({ ...baseOptions, rustWorkspace: true });
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("Cargo.toml"); // workspace root
-    expect(targets).toContain("crates/foo/Cargo.toml");
-    expect(targets).toContain("crates/foo/src/main.rs");
-    expect(targets).toContain("rustfmt.toml");
-    expect(targets).toContain("clippy.toml");
+    expect(targets).toContain('Cargo.toml'); // workspace root
+    expect(targets).toContain('crates/foo/Cargo.toml');
+    expect(targets).toContain('crates/foo/src/main.rs');
+    expect(targets).toContain('rustfmt.toml');
+    expect(targets).toContain('clippy.toml');
   });
 
-  it("emits the workspace-Cargo.toml template at root when rustWorkspace is true", () => {
+  it('emits the workspace-Cargo.toml template at root when rustWorkspace is true', () => {
     const contribution = rustContributor({ ...baseOptions, rustWorkspace: true });
-    const rootCargo = contribution.files.find((f) => f.target === "Cargo.toml");
-    expect(rootCargo?.template).toBe("rust/workspace-Cargo.toml.tmpl");
+    const rootCargo = contribution.files.find((f) => f.target === 'Cargo.toml');
+    expect(rootCargo?.template).toBe('rust/workspace-Cargo.toml.tmpl');
   });
 
-  it("contributes crates/<name>/ in polyglot mode without workspace flag", () => {
+  it('contributes crates/<name>/ in polyglot mode without workspace flag', () => {
     const polyglotOpts: Options = {
       ...baseOptions,
-      languages: ["typescript", "rust"],
-      monorepo: "turbo",
+      languages: ['typescript', 'rust'],
+      monorepo: 'turbo',
     };
     const contribution = rustContributor(polyglotOpts);
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("crates/foo/Cargo.toml");
-    expect(targets).toContain("crates/foo/src/main.rs");
-    expect(targets).not.toContain("Cargo.toml"); // no workspace root because rustWorkspace is false
+    expect(targets).toContain('crates/foo/Cargo.toml');
+    expect(targets).toContain('crates/foo/src/main.rs');
+    expect(targets).not.toContain('Cargo.toml'); // no workspace root because rustWorkspace is false
   });
 
-  it("emits both crates/<name>/ AND workspace root in polyglot + rustWorkspace mode", () => {
+  it('emits both crates/<name>/ AND workspace root in polyglot + rustWorkspace mode', () => {
     const polyglotOpts: Options = {
       ...baseOptions,
-      languages: ["typescript", "rust"],
-      monorepo: "turbo",
+      languages: ['typescript', 'rust'],
+      monorepo: 'turbo',
       rustWorkspace: true,
     };
     const contribution = rustContributor(polyglotOpts);
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("Cargo.toml");
-    expect(targets).toContain("crates/foo/Cargo.toml");
+    expect(targets).toContain('Cargo.toml');
+    expect(targets).toContain('crates/foo/Cargo.toml');
   });
 });
 ```
@@ -625,44 +625,44 @@ Expected: FAIL — module not found.
 - [ ] **Step 7: Implement `src/plan/contributors/languages/rust.ts`**
 
 ```ts
-import type { Options } from "../../../options.js";
-import type { Contribution, FilePlan } from "../../contributors.js";
-import { getSubPath } from "../../sub-paths.js";
+import type { Options } from '../../../options.js';
+import type { Contribution, FilePlan } from '../../contributors.js';
+import { getSubPath } from '../../sub-paths.js';
 
 export const rustContributor = (opts: Options): Contribution => {
-  if (!opts.languages.includes("rust")) {
+  if (!opts.languages.includes('rust')) {
     return { files: [], postSteps: [], deps: {} };
   }
 
-  const subPath = getSubPath("rust", opts);
-  const isWorkspaceLayout = subPath !== "";
+  const subPath = getSubPath('rust', opts);
+  const isWorkspaceLayout = subPath !== '';
   const emitWorkspaceRoot = opts.rustWorkspace;
 
   const files: FilePlan[] = [];
 
   // Always emit fmt/clippy at repo root
   files.push(
-    { template: "rust/rustfmt.toml", target: "rustfmt.toml" },
-    { template: "rust/clippy.toml", target: "clippy.toml" },
+    { template: 'rust/rustfmt.toml', target: 'rustfmt.toml' },
+    { template: 'rust/clippy.toml', target: 'clippy.toml' },
   );
 
   // Optionally emit workspace-root Cargo.toml
   if (emitWorkspaceRoot) {
-    files.push({ template: "rust/workspace-Cargo.toml.tmpl", target: "Cargo.toml" });
+    files.push({ template: 'rust/workspace-Cargo.toml.tmpl', target: 'Cargo.toml' });
   }
 
   // Emit the crate (at root for single-crate, under crates/<name>/ otherwise)
-  const cratePath = isWorkspaceLayout ? `${subPath}/` : "";
+  const cratePath = isWorkspaceLayout ? `${subPath}/` : '';
   files.push(
-    { template: "rust/Cargo.toml.tmpl", target: `${cratePath}Cargo.toml` },
-    { template: "rust/src/main.rs.tmpl", target: `${cratePath}src/main.rs` },
+    { template: 'rust/Cargo.toml.tmpl', target: `${cratePath}Cargo.toml` },
+    { template: 'rust/src/main.rs.tmpl', target: `${cratePath}src/main.rs` },
   );
 
   // Sanity check: if rustWorkspace=true the crate must be under crates/<name>/
   // (otherwise the crate Cargo.toml collides with the workspace Cargo.toml).
   // getSubPath enforces this, but assert as defense in depth.
   if (emitWorkspaceRoot && !isWorkspaceLayout) {
-    throw new Error("Internal: rustWorkspace=true with no sub-path");
+    throw new Error('Internal: rustWorkspace=true with no sub-path');
   }
 
   return {
@@ -809,89 +809,89 @@ Implements the Python contributor with single-package, uv-workspace, and polyglo
 Create `src/plan/contributors/languages/python.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
-import type { Options } from "../../../options.js";
-import { pythonContributor } from "./python.js";
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../../../options.js';
+import { pythonContributor } from './python.js';
 
 const baseOptions: Options = {
-  name: "foo",
-  description: "",
-  cwd: "/tmp",
-  languages: ["python"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "none",
+  name: 'foo',
+  description: '',
+  cwd: '/tmp',
+  languages: ['python'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'none',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
   verbose: false,
 };
 
-describe("pythonContributor", () => {
-  it("returns empty contribution when python is not in languages", () => {
-    const contribution = pythonContributor({ ...baseOptions, languages: ["rust"] });
+describe('pythonContributor', () => {
+  it('returns empty contribution when python is not in languages', () => {
+    const contribution = pythonContributor({ ...baseOptions, languages: ['rust'] });
     expect(contribution.files).toHaveLength(0);
   });
 
-  it("contributes pyproject + ruff + __init__ + tests at root for single-package", () => {
+  it('contributes pyproject + ruff + __init__ + tests at root for single-package', () => {
     const contribution = pythonContributor(baseOptions);
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("pyproject.toml");
-    expect(targets).toContain("ruff.toml");
-    expect(targets).toContain("src/foo/__init__.py");
-    expect(targets).toContain("tests/test_smoke.py");
+    expect(targets).toContain('pyproject.toml');
+    expect(targets).toContain('ruff.toml');
+    expect(targets).toContain('src/foo/__init__.py');
+    expect(targets).toContain('tests/test_smoke.py');
   });
 
-  it("uses underscored package name for hyphenated project names", () => {
-    const contribution = pythonContributor({ ...baseOptions, name: "my-app" });
+  it('uses underscored package name for hyphenated project names', () => {
+    const contribution = pythonContributor({ ...baseOptions, name: 'my-app' });
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("src/my_app/__init__.py");
+    expect(targets).toContain('src/my_app/__init__.py');
   });
 
-  it("emits workspace root + packages/<name>/ when pythonWorkspace is true", () => {
+  it('emits workspace root + packages/<name>/ when pythonWorkspace is true', () => {
     const contribution = pythonContributor({ ...baseOptions, pythonWorkspace: true });
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("pyproject.toml"); // workspace root
-    expect(targets).toContain("packages/foo/pyproject.toml");
-    expect(targets).toContain("packages/foo/src/foo/__init__.py");
-    expect(targets).toContain("packages/foo/tests/test_smoke.py");
+    expect(targets).toContain('pyproject.toml'); // workspace root
+    expect(targets).toContain('packages/foo/pyproject.toml');
+    expect(targets).toContain('packages/foo/src/foo/__init__.py');
+    expect(targets).toContain('packages/foo/tests/test_smoke.py');
   });
 
-  it("emits the workspace-pyproject template at root when pythonWorkspace is true", () => {
+  it('emits the workspace-pyproject template at root when pythonWorkspace is true', () => {
     const contribution = pythonContributor({ ...baseOptions, pythonWorkspace: true });
-    const rootPyproject = contribution.files.find((f) => f.target === "pyproject.toml");
-    expect(rootPyproject?.template).toBe("python/workspace-pyproject.toml.tmpl");
+    const rootPyproject = contribution.files.find((f) => f.target === 'pyproject.toml');
+    expect(rootPyproject?.template).toBe('python/workspace-pyproject.toml.tmpl');
   });
 
-  it("contributes py/<name>/ in polyglot mode without workspace flag", () => {
+  it('contributes py/<name>/ in polyglot mode without workspace flag', () => {
     const polyglotOpts: Options = {
       ...baseOptions,
-      languages: ["typescript", "python"],
-      monorepo: "turbo",
+      languages: ['typescript', 'python'],
+      monorepo: 'turbo',
     };
     const contribution = pythonContributor(polyglotOpts);
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("py/foo/pyproject.toml");
-    expect(targets).toContain("py/foo/src/foo/__init__.py");
-    expect(targets).not.toContain("pyproject.toml"); // no workspace root because pythonWorkspace is false
+    expect(targets).toContain('py/foo/pyproject.toml');
+    expect(targets).toContain('py/foo/src/foo/__init__.py');
+    expect(targets).not.toContain('pyproject.toml'); // no workspace root because pythonWorkspace is false
   });
 
-  it("emits both py/<name>/ AND workspace root in polyglot + pythonWorkspace mode", () => {
+  it('emits both py/<name>/ AND workspace root in polyglot + pythonWorkspace mode', () => {
     const polyglotOpts: Options = {
       ...baseOptions,
-      languages: ["typescript", "python"],
-      monorepo: "turbo",
+      languages: ['typescript', 'python'],
+      monorepo: 'turbo',
       pythonWorkspace: true,
     };
     const contribution = pythonContributor(polyglotOpts);
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("pyproject.toml");
-    expect(targets).toContain("py/foo/pyproject.toml");
+    expect(targets).toContain('pyproject.toml');
+    expect(targets).toContain('py/foo/pyproject.toml');
   });
 });
 ```
@@ -904,48 +904,48 @@ Expected: FAIL — module not found.
 - [ ] **Step 3: Implement `src/plan/contributors/languages/python.ts`**
 
 ```ts
-import type { Options } from "../../../options.js";
-import type { Contribution, FilePlan } from "../../contributors.js";
-import { getSubPath } from "../../sub-paths.js";
+import type { Options } from '../../../options.js';
+import type { Contribution, FilePlan } from '../../contributors.js';
+import { getSubPath } from '../../sub-paths.js';
 
-const moduleName = (name: string): string => name.replace(/-/g, "_");
+const moduleName = (name: string): string => name.replace(/-/g, '_');
 
 export const pythonContributor = (opts: Options): Contribution => {
-  if (!opts.languages.includes("python")) {
+  if (!opts.languages.includes('python')) {
     return { files: [], postSteps: [], deps: {} };
   }
 
-  const subPath = getSubPath("python", opts);
-  const isWorkspaceLayout = subPath !== "";
+  const subPath = getSubPath('python', opts);
+  const isWorkspaceLayout = subPath !== '';
   const emitWorkspaceRoot = opts.pythonWorkspace;
   const pkgName = moduleName(opts.name);
 
   const files: FilePlan[] = [];
 
-  files.push({ template: "python/ruff.toml", target: "ruff.toml" });
+  files.push({ template: 'python/ruff.toml', target: 'ruff.toml' });
 
   if (emitWorkspaceRoot) {
     files.push({
-      template: "python/workspace-pyproject.toml.tmpl",
-      target: "pyproject.toml",
+      template: 'python/workspace-pyproject.toml.tmpl',
+      target: 'pyproject.toml',
     });
   }
 
-  const pkgPath = isWorkspaceLayout ? `${subPath}/` : "";
+  const pkgPath = isWorkspaceLayout ? `${subPath}/` : '';
   files.push(
-    { template: "python/pyproject.toml.tmpl", target: `${pkgPath}pyproject.toml` },
+    { template: 'python/pyproject.toml.tmpl', target: `${pkgPath}pyproject.toml` },
     {
-      template: "python/package/__init__.py.tmpl",
+      template: 'python/package/__init__.py.tmpl',
       target: `${pkgPath}src/${pkgName}/__init__.py`,
     },
     {
-      template: "python/tests/test_smoke.py.tmpl",
+      template: 'python/tests/test_smoke.py.tmpl',
       target: `${pkgPath}tests/test_smoke.py`,
     },
   );
 
   if (emitWorkspaceRoot && !isWorkspaceLayout) {
-    throw new Error("Internal: pythonWorkspace=true with no sub-path");
+    throw new Error('Internal: pythonWorkspace=true with no sub-path');
   }
 
   return {
@@ -1036,8 +1036,8 @@ When `opts.monorepo !== 'none'`, emit root-level monorepo orchestration files: `
 
 ```yaml
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 ```
 
 - [ ] **Step 4: Write the failing test for `monorepoPackageJson`**
@@ -1045,67 +1045,67 @@ packages:
 Create `src/scaffold/generators/monorepoPackageJson.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
-import type { Options } from "../../options.js";
-import { renderMonorepoPackageJson } from "./monorepoPackageJson.js";
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../../options.js';
+import { renderMonorepoPackageJson } from './monorepoPackageJson.js';
 
 const baseOptions: Options = {
-  name: "my-mono",
-  description: "Polyglot project",
-  cwd: "/tmp",
-  languages: ["typescript", "rust"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "turbo",
+  name: 'my-mono',
+  description: 'Polyglot project',
+  cwd: '/tmp',
+  languages: ['typescript', 'rust'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'turbo',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
   verbose: false,
 };
 
-describe("renderMonorepoPackageJson", () => {
-  it("emits a name and private:true", () => {
+describe('renderMonorepoPackageJson', () => {
+  it('emits a name and private:true', () => {
     const json = renderMonorepoPackageJson(baseOptions);
     const parsed = JSON.parse(json) as { name: string; private: boolean };
-    expect(parsed.name).toBe("my-mono");
+    expect(parsed.name).toBe('my-mono');
     expect(parsed.private).toBe(true);
   });
 
-  it("includes a workspaces array for bun", () => {
-    const json = renderMonorepoPackageJson({ ...baseOptions, packageManager: "bun" });
+  it('includes a workspaces array for bun', () => {
+    const json = renderMonorepoPackageJson({ ...baseOptions, packageManager: 'bun' });
     const parsed = JSON.parse(json) as { workspaces: string[] };
-    expect(parsed.workspaces).toEqual(["apps/*", "packages/*"]);
+    expect(parsed.workspaces).toEqual(['apps/*', 'packages/*']);
   });
 
-  it("omits workspaces for pnpm (since pnpm-workspace.yaml is separate)", () => {
+  it('omits workspaces for pnpm (since pnpm-workspace.yaml is separate)', () => {
     const json = renderMonorepoPackageJson(baseOptions);
     const parsed = JSON.parse(json) as { workspaces?: string[] };
     expect(parsed.workspaces).toBeUndefined();
   });
 
-  it("includes turbo as a devDependency when monorepo is turbo", () => {
+  it('includes turbo as a devDependency when monorepo is turbo', () => {
     const json = renderMonorepoPackageJson(baseOptions);
     const parsed = JSON.parse(json) as { devDependencies: Record<string, string> };
     expect(parsed.devDependencies.turbo).toBeDefined();
   });
 
-  it("includes nx as a devDependency when monorepo is nx", () => {
-    const json = renderMonorepoPackageJson({ ...baseOptions, monorepo: "nx" });
+  it('includes nx as a devDependency when monorepo is nx', () => {
+    const json = renderMonorepoPackageJson({ ...baseOptions, monorepo: 'nx' });
     const parsed = JSON.parse(json) as { devDependencies: Record<string, string> };
     expect(parsed.devDependencies.nx).toBeDefined();
     expect(parsed.devDependencies.turbo).toBeUndefined();
   });
 
-  it("sets packageManager based on options", () => {
+  it('sets packageManager based on options', () => {
     const pnpm = JSON.parse(renderMonorepoPackageJson(baseOptions)) as { packageManager: string };
     expect(pnpm.packageManager).toMatch(/^pnpm@/);
     const bun = JSON.parse(
-      renderMonorepoPackageJson({ ...baseOptions, packageManager: "bun" }),
+      renderMonorepoPackageJson({ ...baseOptions, packageManager: 'bun' }),
     ) as { packageManager: string };
     expect(bun.packageManager).toMatch(/^bun@/);
   });
@@ -1120,42 +1120,42 @@ Expected: FAIL — module not found.
 - [ ] **Step 6: Implement `src/scaffold/generators/monorepoPackageJson.ts`**
 
 ```ts
-import type { Options } from "../../options.js";
+import type { Options } from '../../options.js';
 
-const PNPM_VERSION = "10.0.0";
-const BUN_VERSION = "1.1.0";
-const TURBO_VERSION = "^2.3.0";
-const NX_VERSION = "^20.3.0";
+const PNPM_VERSION = '10.0.0';
+const BUN_VERSION = '1.1.0';
+const TURBO_VERSION = '^2.3.0';
+const NX_VERSION = '^20.3.0';
 
 export const renderMonorepoPackageJson = (opts: Options): string => {
   const scripts: Record<string, string> = {
-    build: opts.monorepo === "turbo" ? "turbo run build" : "nx run-many --target=build",
-    test: opts.monorepo === "turbo" ? "turbo run test" : "nx run-many --target=test",
-    check: opts.monorepo === "turbo" ? "turbo run check" : "nx run-many --target=check",
+    build: opts.monorepo === 'turbo' ? 'turbo run build' : 'nx run-many --target=build',
+    test: opts.monorepo === 'turbo' ? 'turbo run test' : 'nx run-many --target=test',
+    check: opts.monorepo === 'turbo' ? 'turbo run check' : 'nx run-many --target=check',
   };
 
   const devDependencies: Record<string, string> = {};
-  if (opts.monorepo === "turbo") {
+  if (opts.monorepo === 'turbo') {
     devDependencies.turbo = TURBO_VERSION;
-  } else if (opts.monorepo === "nx") {
+  } else if (opts.monorepo === 'nx') {
     devDependencies.nx = NX_VERSION;
   }
 
   const pkg: Record<string, unknown> = {
     name: opts.name,
-    version: "0.0.1",
+    version: '0.0.1',
     description: opts.description,
     private: true,
-    type: "module",
+    type: 'module',
     scripts,
     devDependencies,
-    packageManager: opts.packageManager === "pnpm" ? `pnpm@${PNPM_VERSION}` : `bun@${BUN_VERSION}`,
-    engines: { node: ">=22" },
+    packageManager: opts.packageManager === 'pnpm' ? `pnpm@${PNPM_VERSION}` : `bun@${BUN_VERSION}`,
+    engines: { node: '>=22' },
   };
 
   // Bun uses package.json workspaces; pnpm uses pnpm-workspace.yaml.
-  if (opts.packageManager === "bun") {
-    pkg.workspaces = ["apps/*", "packages/*"];
+  if (opts.packageManager === 'bun') {
+    pkg.workspaces = ['apps/*', 'packages/*'];
   }
 
   return `${JSON.stringify(pkg, null, 2)}\n`;
@@ -1172,65 +1172,65 @@ Expected: 6 tests PASS.
 Create `src/plan/contributors/monorepo.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
-import type { Options } from "../../options.js";
-import { monorepoContributor } from "./monorepo.js";
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../../options.js';
+import { monorepoContributor } from './monorepo.js';
 
 const baseOptions: Options = {
-  name: "foo",
-  description: "",
-  cwd: "/tmp",
-  languages: ["typescript"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "none",
+  name: 'foo',
+  description: '',
+  cwd: '/tmp',
+  languages: ['typescript'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'none',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
   verbose: false,
 };
 
-describe("monorepoContributor", () => {
-  it("returns empty when monorepo is none", () => {
+describe('monorepoContributor', () => {
+  it('returns empty when monorepo is none', () => {
     const contribution = monorepoContributor(baseOptions);
     expect(contribution.files).toHaveLength(0);
   });
 
-  it("emits turbo.json + root package.json + pnpm-workspace.yaml for turbo + pnpm", () => {
-    const contribution = monorepoContributor({ ...baseOptions, monorepo: "turbo" });
+  it('emits turbo.json + root package.json + pnpm-workspace.yaml for turbo + pnpm', () => {
+    const contribution = monorepoContributor({ ...baseOptions, monorepo: 'turbo' });
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("turbo.json");
-    expect(targets).toContain("package.json");
-    expect(targets).toContain("pnpm-workspace.yaml");
+    expect(targets).toContain('turbo.json');
+    expect(targets).toContain('package.json');
+    expect(targets).toContain('pnpm-workspace.yaml');
   });
 
-  it("omits pnpm-workspace.yaml when packageManager is bun", () => {
+  it('omits pnpm-workspace.yaml when packageManager is bun', () => {
     const contribution = monorepoContributor({
       ...baseOptions,
-      monorepo: "turbo",
-      packageManager: "bun",
+      monorepo: 'turbo',
+      packageManager: 'bun',
     });
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("turbo.json");
-    expect(targets).toContain("package.json");
-    expect(targets).not.toContain("pnpm-workspace.yaml");
+    expect(targets).toContain('turbo.json');
+    expect(targets).toContain('package.json');
+    expect(targets).not.toContain('pnpm-workspace.yaml');
   });
 
-  it("emits nx.json for nx mode", () => {
-    const contribution = monorepoContributor({ ...baseOptions, monorepo: "nx" });
+  it('emits nx.json for nx mode', () => {
+    const contribution = monorepoContributor({ ...baseOptions, monorepo: 'nx' });
     const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain("nx.json");
-    expect(targets).not.toContain("turbo.json");
+    expect(targets).toContain('nx.json');
+    expect(targets).not.toContain('turbo.json');
   });
 
-  it("root package.json is generated content (not a template)", () => {
-    const contribution = monorepoContributor({ ...baseOptions, monorepo: "turbo" });
-    const pkg = contribution.files.find((f) => f.target === "package.json");
+  it('root package.json is generated content (not a template)', () => {
+    const contribution = monorepoContributor({ ...baseOptions, monorepo: 'turbo' });
+    const pkg = contribution.files.find((f) => f.target === 'package.json');
     expect(pkg?.content).toBeDefined();
     expect(pkg?.raw).toBe(true);
   });
@@ -1245,27 +1245,27 @@ Expected: FAIL — module not found.
 - [ ] **Step 10: Implement `src/plan/contributors/monorepo.ts`**
 
 ```ts
-import type { Options } from "../../options.js";
-import { renderMonorepoPackageJson } from "../../scaffold/generators/monorepoPackageJson.js";
-import type { Contribution, FilePlan } from "../contributors.js";
+import type { Options } from '../../options.js';
+import { renderMonorepoPackageJson } from '../../scaffold/generators/monorepoPackageJson.js';
+import type { Contribution, FilePlan } from '../contributors.js';
 
 export const monorepoContributor = (opts: Options): Contribution => {
-  if (opts.monorepo === "none") {
+  if (opts.monorepo === 'none') {
     return { files: [], postSteps: [], deps: {} };
   }
 
   const files: FilePlan[] = [
-    { target: "package.json", content: renderMonorepoPackageJson(opts), raw: true },
+    { target: 'package.json', content: renderMonorepoPackageJson(opts), raw: true },
   ];
 
-  if (opts.monorepo === "turbo") {
-    files.push({ template: "monorepo/turbo.json.tmpl", target: "turbo.json" });
-  } else if (opts.monorepo === "nx") {
-    files.push({ template: "monorepo/nx.json.tmpl", target: "nx.json" });
+  if (opts.monorepo === 'turbo') {
+    files.push({ template: 'monorepo/turbo.json.tmpl', target: 'turbo.json' });
+  } else if (opts.monorepo === 'nx') {
+    files.push({ template: 'monorepo/nx.json.tmpl', target: 'nx.json' });
   }
 
-  if (opts.packageManager === "pnpm") {
-    files.push({ template: "monorepo/pnpm-workspace.yaml.tmpl", target: "pnpm-workspace.yaml" });
+  if (opts.packageManager === 'pnpm') {
+    files.push({ template: 'monorepo/pnpm-workspace.yaml.tmpl', target: 'pnpm-workspace.yaml' });
   }
 
   return {
@@ -1308,36 +1308,36 @@ Update `tsContributor` so that when `opts.monorepo !== 'none'`, files emit under
 Add these `it` blocks inside the existing `describe('tsContributor', () => { ... })` block (after the existing tests, do not modify them):
 
 ```ts
-it("emits files under apps/<name>/ when monorepo is turbo", () => {
-  const contribution = tsContributor({ ...baseOptions, monorepo: "turbo" });
+it('emits files under apps/<name>/ when monorepo is turbo', () => {
+  const contribution = tsContributor({ ...baseOptions, monorepo: 'turbo' });
   const targets = contribution.files.map((f) => f.target);
-  expect(targets).toContain("apps/foo/tsconfig.json");
-  expect(targets).toContain("apps/foo/.oxlintrc.json");
-  expect(targets).toContain("apps/foo/.oxfmtrc.json");
-  expect(targets).toContain("apps/foo/package.json");
-  expect(targets).toContain("apps/foo/vite.config.ts");
-  expect(targets).toContain("apps/foo/src/index.ts");
-  expect(targets).toContain("apps/foo/tests/smoke.test.ts");
+  expect(targets).toContain('apps/foo/tsconfig.json');
+  expect(targets).toContain('apps/foo/.oxlintrc.json');
+  expect(targets).toContain('apps/foo/.oxfmtrc.json');
+  expect(targets).toContain('apps/foo/package.json');
+  expect(targets).toContain('apps/foo/vite.config.ts');
+  expect(targets).toContain('apps/foo/src/index.ts');
+  expect(targets).toContain('apps/foo/tests/smoke.test.ts');
 });
 
-it("does not emit packageManager field when in monorepo mode", () => {
-  const contribution = tsContributor({ ...baseOptions, monorepo: "turbo" });
-  const pkg = contribution.files.find((f) => f.target === "apps/foo/package.json");
-  const parsed = JSON.parse(pkg?.content ?? "{}") as { packageManager?: string };
+it('does not emit packageManager field when in monorepo mode', () => {
+  const contribution = tsContributor({ ...baseOptions, monorepo: 'turbo' });
+  const pkg = contribution.files.find((f) => f.target === 'apps/foo/package.json');
+  const parsed = JSON.parse(pkg?.content ?? '{}') as { packageManager?: string };
   expect(parsed.packageManager).toBeUndefined();
 });
 
-it("emits packageManager field when not in monorepo mode", () => {
+it('emits packageManager field when not in monorepo mode', () => {
   const contribution = tsContributor(baseOptions);
-  const pkg = contribution.files.find((f) => f.target === "package.json");
-  const parsed = JSON.parse(pkg?.content ?? "{}") as { packageManager?: string };
+  const pkg = contribution.files.find((f) => f.target === 'package.json');
+  const parsed = JSON.parse(pkg?.content ?? '{}') as { packageManager?: string };
   expect(parsed.packageManager).toMatch(/^pnpm@/);
 });
 
-it("also emits files under apps/<name>/ for nx mode", () => {
-  const contribution = tsContributor({ ...baseOptions, monorepo: "nx" });
+it('also emits files under apps/<name>/ for nx mode', () => {
+  const contribution = tsContributor({ ...baseOptions, monorepo: 'nx' });
   const targets = contribution.files.map((f) => f.target);
-  expect(targets).toContain("apps/foo/tsconfig.json");
+  expect(targets).toContain('apps/foo/tsconfig.json');
 });
 ```
 
@@ -1361,9 +1361,9 @@ export const renderPackageJson = (opts: Options, contributed: PkgDeps): string =
 
   const pkg: Record<string, unknown> = {
     name: opts.name,
-    version: "0.0.1",
+    version: '0.0.1',
     description: opts.description,
-    type: "module",
+    type: 'module',
     scripts,
     dependencies,
     devDependencies,
@@ -1371,10 +1371,10 @@ export const renderPackageJson = (opts: Options, contributed: PkgDeps): string =
 
   // packageManager and engines belong on the root package.json only.
   // In monorepo mode, the monorepo root carries them; this is a workspace member.
-  if (opts.monorepo === "none") {
+  if (opts.monorepo === 'none') {
     pkg.packageManager =
-      opts.packageManager === "pnpm" ? `pnpm@${PNPM_VERSION}` : `bun@${BUN_VERSION}`;
-    pkg.engines = { node: ">=22" };
+      opts.packageManager === 'pnpm' ? `pnpm@${PNPM_VERSION}` : `bun@${BUN_VERSION}`;
+    pkg.engines = { node: '>=22' };
   }
 
   return `${JSON.stringify(pkg, null, 2)}\n`;
@@ -1386,19 +1386,19 @@ export const renderPackageJson = (opts: Options, contributed: PkgDeps): string =
 Replace `tsContributor` with the sub-path-aware version:
 
 ```ts
-import type { Options } from "../../../options.js";
-import { renderPackageJson } from "../../../scaffold/generators/packageJson.js";
-import { renderViteConfig } from "../../../scaffold/generators/viteConfig.js";
-import type { Contribution, FilePlan, PkgDeps } from "../../contributors.js";
-import { getSubPath } from "../../sub-paths.js";
+import type { Options } from '../../../options.js';
+import { renderPackageJson } from '../../../scaffold/generators/packageJson.js';
+import { renderViteConfig } from '../../../scaffold/generators/viteConfig.js';
+import type { Contribution, FilePlan, PkgDeps } from '../../contributors.js';
+import { getSubPath } from '../../sub-paths.js';
 
 export const tsContributor = (opts: Options): Contribution => {
-  if (!opts.languages.includes("typescript")) {
+  if (!opts.languages.includes('typescript')) {
     return { files: [], postSteps: [], deps: {} };
   }
 
-  const subPath = getSubPath("typescript", opts);
-  const prefix = subPath === "" ? "" : `${subPath}/`;
+  const subPath = getSubPath('typescript', opts);
+  const prefix = subPath === '' ? '' : `${subPath}/`;
 
   const contributedDeps: PkgDeps = {
     dependencies: {},
@@ -1407,11 +1407,11 @@ export const tsContributor = (opts: Options): Contribution => {
   };
 
   const files: FilePlan[] = [
-    { template: "ts/tsconfig.json.tmpl", target: `${prefix}tsconfig.json` },
-    { template: "ts/.oxlintrc.json", target: `${prefix}.oxlintrc.json` },
-    { template: "ts/.oxfmtrc.json", target: `${prefix}.oxfmtrc.json` },
-    { template: "ts/src/index.ts.tmpl", target: `${prefix}src/index.ts` },
-    { template: "ts/tests/smoke.test.ts.tmpl", target: `${prefix}tests/smoke.test.ts` },
+    { template: 'ts/tsconfig.json.tmpl', target: `${prefix}tsconfig.json` },
+    { template: 'ts/.oxlintrc.json', target: `${prefix}.oxlintrc.json` },
+    { template: 'ts/.oxfmtrc.json', target: `${prefix}.oxfmtrc.json` },
+    { template: 'ts/src/index.ts.tmpl', target: `${prefix}src/index.ts` },
+    { template: 'ts/tests/smoke.test.ts.tmpl', target: `${prefix}tests/smoke.test.ts` },
     {
       target: `${prefix}package.json`,
       content: renderPackageJson(opts, contributedDeps),
@@ -1470,9 +1470,9 @@ In `src/run.ts`, modify the `buildPlan` call to include the new contributors. Al
 
 ```ts
 // at the top, with existing imports
-import { monorepoContributor } from "./plan/contributors/monorepo.js";
-import { pythonContributor } from "./plan/contributors/languages/python.js";
-import { rustContributor } from "./plan/contributors/languages/rust.js";
+import { monorepoContributor } from './plan/contributors/monorepo.js';
+import { pythonContributor } from './plan/contributors/languages/python.js';
+import { rustContributor } from './plan/contributors/languages/rust.js';
 ```
 
 And update the `buildPlan` line:
@@ -1498,18 +1498,18 @@ Replace `applyDefaults` with:
 ```ts
 export const applyDefaults = (partial: PartialOptions): PartialOptions => {
   const isPolyglot = (partial.languages?.length ?? 0) > 1;
-  const monorepoDefault = isPolyglot ? "turbo" : "none";
+  const monorepoDefault = isPolyglot ? 'turbo' : 'none';
 
   const filled: PartialOptions = {
-    description: "",
+    description: '',
     monorepo: monorepoDefault,
-    packageManager: "pnpm",
-    bunTest: "vitest",
+    packageManager: 'pnpm',
+    bunTest: 'vitest',
     rustWorkspace: false,
     pythonWorkspace: false,
     ci: false,
     github: false,
-    githubVisibility: "private",
+    githubVisibility: 'private',
     git: true,
     commit: true,
     install: true,
@@ -1519,8 +1519,8 @@ export const applyDefaults = (partial: PartialOptions): PartialOptions => {
 
   // Polyglot forces a monorepo. If partial explicitly sets monorepo: 'none' with polyglot,
   // override it to the default. This is the one place we override an explicit value.
-  if (isPolyglot && filled.monorepo === "none") {
-    filled.monorepo = "turbo";
+  if (isPolyglot && filled.monorepo === 'none') {
+    filled.monorepo = 'turbo';
   }
 
   return filled;
@@ -1532,22 +1532,22 @@ export const applyDefaults = (partial: PartialOptions): PartialOptions => {
 Add these `it` blocks inside the existing `describe('applyDefaults', () => { ... })` block:
 
 ```ts
-it("overrides monorepo: none to turbo when polyglot", () => {
+it('overrides monorepo: none to turbo when polyglot', () => {
   const out = applyDefaults({
-    cwd: "/tmp",
-    languages: ["typescript", "rust"],
-    monorepo: "none",
+    cwd: '/tmp',
+    languages: ['typescript', 'rust'],
+    monorepo: 'none',
   });
-  expect(out.monorepo).toBe("turbo");
+  expect(out.monorepo).toBe('turbo');
 });
 
-it("preserves monorepo: nx for polyglot when explicitly set", () => {
+it('preserves monorepo: nx for polyglot when explicitly set', () => {
   const out = applyDefaults({
-    cwd: "/tmp",
-    languages: ["typescript", "rust"],
-    monorepo: "nx",
+    cwd: '/tmp',
+    languages: ['typescript', 'rust'],
+    monorepo: 'nx',
   });
-  expect(out.monorepo).toBe("nx");
+  expect(out.monorepo).toBe('nx');
 });
 ```
 
@@ -1561,30 +1561,30 @@ Expected: PASS (5 existing + 2 new = 7 tests).
 Create `tests/integration/rust-end-to-end.test.ts`:
 
 ```ts
-import { mkdtempSync, readFileSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { describe, expect, it } from "vitest";
-import type { Options } from "../../src/options.js";
-import { buildPlan } from "../../src/plan/index.js";
-import { sharedContributor } from "../../src/plan/contributors/shared.js";
-import { monorepoContributor } from "../../src/plan/contributors/monorepo.js";
-import { rustContributor } from "../../src/plan/contributors/languages/rust.js";
-import { executePlan } from "../../src/scaffold/index.js";
+import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../../src/options.js';
+import { buildPlan } from '../../src/plan/index.js';
+import { sharedContributor } from '../../src/plan/contributors/shared.js';
+import { monorepoContributor } from '../../src/plan/contributors/monorepo.js';
+import { rustContributor } from '../../src/plan/contributors/languages/rust.js';
+import { executePlan } from '../../src/scaffold/index.js';
 
 const baseOpts: Options = {
-  name: "rusty",
-  description: "A Rust demo",
-  cwd: "/tmp",
-  languages: ["rust"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "none",
+  name: 'rusty',
+  description: 'A Rust demo',
+  cwd: '/tmp',
+  languages: ['rust'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'none',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
@@ -1593,42 +1593,42 @@ const baseOpts: Options = {
 
 const contributors = [sharedContributor, monorepoContributor, rustContributor];
 
-describe("Rust-only end-to-end scaffold", () => {
-  it("single-crate produces Cargo.toml + src/main.rs at root", async () => {
-    const cwd = mkdtempSync(join(tmpdir(), "rust-single-"));
+describe('Rust-only end-to-end scaffold', () => {
+  it('single-crate produces Cargo.toml + src/main.rs at root', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'rust-single-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, target, { ...baseOpts, cwd });
 
-    expect(existsSync(join(target, "Cargo.toml"))).toBe(true);
-    expect(existsSync(join(target, "src/main.rs"))).toBe(true);
-    expect(existsSync(join(target, "rustfmt.toml"))).toBe(true);
-    expect(existsSync(join(target, "clippy.toml"))).toBe(true);
-    expect(existsSync(join(target, "README.md"))).toBe(true);
-    expect(existsSync(join(target, "AGENTS.md"))).toBe(true);
+    expect(existsSync(join(target, 'Cargo.toml'))).toBe(true);
+    expect(existsSync(join(target, 'src/main.rs'))).toBe(true);
+    expect(existsSync(join(target, 'rustfmt.toml'))).toBe(true);
+    expect(existsSync(join(target, 'clippy.toml'))).toBe(true);
+    expect(existsSync(join(target, 'README.md'))).toBe(true);
+    expect(existsSync(join(target, 'AGENTS.md'))).toBe(true);
   });
 
-  it("Cargo.toml has the project name interpolated", async () => {
-    const cwd = mkdtempSync(join(tmpdir(), "rust-single-"));
+  it('Cargo.toml has the project name interpolated', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'rust-single-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, target, { ...baseOpts, cwd });
 
-    const cargo = readFileSync(join(target, "Cargo.toml"), "utf8");
+    const cargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     expect(cargo).toContain('name = "rusty"');
   });
 
-  it("workspace mode produces workspace Cargo.toml + crates/<name>/", async () => {
+  it('workspace mode produces workspace Cargo.toml + crates/<name>/', async () => {
     const opts: Options = { ...baseOpts, rustWorkspace: true };
-    const cwd = mkdtempSync(join(tmpdir(), "rust-ws-"));
+    const cwd = mkdtempSync(join(tmpdir(), 'rust-ws-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
     await executePlan(plan, target, { ...opts, cwd });
 
-    const rootCargo = readFileSync(join(target, "Cargo.toml"), "utf8");
-    expect(rootCargo).toContain("[workspace]");
-    expect(existsSync(join(target, "crates/rusty/Cargo.toml"))).toBe(true);
-    expect(existsSync(join(target, "crates/rusty/src/main.rs"))).toBe(true);
+    const rootCargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
+    expect(rootCargo).toContain('[workspace]');
+    expect(existsSync(join(target, 'crates/rusty/Cargo.toml'))).toBe(true);
+    expect(existsSync(join(target, 'crates/rusty/src/main.rs'))).toBe(true);
   });
 });
 ```
@@ -1638,30 +1638,30 @@ describe("Rust-only end-to-end scaffold", () => {
 Create `tests/integration/python-end-to-end.test.ts`:
 
 ```ts
-import { mkdtempSync, readFileSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { describe, expect, it } from "vitest";
-import type { Options } from "../../src/options.js";
-import { buildPlan } from "../../src/plan/index.js";
-import { sharedContributor } from "../../src/plan/contributors/shared.js";
-import { monorepoContributor } from "../../src/plan/contributors/monorepo.js";
-import { pythonContributor } from "../../src/plan/contributors/languages/python.js";
-import { executePlan } from "../../src/scaffold/index.js";
+import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../../src/options.js';
+import { buildPlan } from '../../src/plan/index.js';
+import { sharedContributor } from '../../src/plan/contributors/shared.js';
+import { monorepoContributor } from '../../src/plan/contributors/monorepo.js';
+import { pythonContributor } from '../../src/plan/contributors/languages/python.js';
+import { executePlan } from '../../src/scaffold/index.js';
 
 const baseOpts: Options = {
-  name: "pythy",
-  description: "A Python demo",
-  cwd: "/tmp",
-  languages: ["python"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "none",
+  name: 'pythy',
+  description: 'A Python demo',
+  cwd: '/tmp',
+  languages: ['python'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'none',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
@@ -1670,40 +1670,40 @@ const baseOpts: Options = {
 
 const contributors = [sharedContributor, monorepoContributor, pythonContributor];
 
-describe("Python-only end-to-end scaffold", () => {
-  it("single-package produces pyproject + src/<name>/", async () => {
-    const cwd = mkdtempSync(join(tmpdir(), "py-single-"));
+describe('Python-only end-to-end scaffold', () => {
+  it('single-package produces pyproject + src/<name>/', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'py-single-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, target, { ...baseOpts, cwd });
 
-    expect(existsSync(join(target, "pyproject.toml"))).toBe(true);
-    expect(existsSync(join(target, "ruff.toml"))).toBe(true);
-    expect(existsSync(join(target, "src/pythy/__init__.py"))).toBe(true);
-    expect(existsSync(join(target, "tests/test_smoke.py"))).toBe(true);
+    expect(existsSync(join(target, 'pyproject.toml'))).toBe(true);
+    expect(existsSync(join(target, 'ruff.toml'))).toBe(true);
+    expect(existsSync(join(target, 'src/pythy/__init__.py'))).toBe(true);
+    expect(existsSync(join(target, 'tests/test_smoke.py'))).toBe(true);
   });
 
-  it("underscores hyphenated names in the module path", async () => {
-    const opts: Options = { ...baseOpts, name: "my-py-app" };
-    const cwd = mkdtempSync(join(tmpdir(), "py-hyphen-"));
+  it('underscores hyphenated names in the module path', async () => {
+    const opts: Options = { ...baseOpts, name: 'my-py-app' };
+    const cwd = mkdtempSync(join(tmpdir(), 'py-hyphen-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
     await executePlan(plan, target, { ...opts, cwd });
 
-    expect(existsSync(join(target, "src/my_py_app/__init__.py"))).toBe(true);
+    expect(existsSync(join(target, 'src/my_py_app/__init__.py'))).toBe(true);
   });
 
-  it("workspace mode produces workspace pyproject + packages/<name>/", async () => {
+  it('workspace mode produces workspace pyproject + packages/<name>/', async () => {
     const opts: Options = { ...baseOpts, pythonWorkspace: true };
-    const cwd = mkdtempSync(join(tmpdir(), "py-ws-"));
+    const cwd = mkdtempSync(join(tmpdir(), 'py-ws-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
     await executePlan(plan, target, { ...opts, cwd });
 
-    const rootPy = readFileSync(join(target, "pyproject.toml"), "utf8");
-    expect(rootPy).toContain("[tool.uv.workspace]");
-    expect(existsSync(join(target, "packages/pythy/pyproject.toml"))).toBe(true);
-    expect(existsSync(join(target, "packages/pythy/src/pythy/__init__.py"))).toBe(true);
+    const rootPy = readFileSync(join(target, 'pyproject.toml'), 'utf8');
+    expect(rootPy).toContain('[tool.uv.workspace]');
+    expect(existsSync(join(target, 'packages/pythy/pyproject.toml'))).toBe(true);
+    expect(existsSync(join(target, 'packages/pythy/src/pythy/__init__.py'))).toBe(true);
   });
 });
 ```
@@ -1713,32 +1713,32 @@ describe("Python-only end-to-end scaffold", () => {
 Create `tests/integration/polyglot-end-to-end.test.ts`:
 
 ```ts
-import { mkdtempSync, readFileSync, existsSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { describe, expect, it } from "vitest";
-import type { Options } from "../../src/options.js";
-import { buildPlan } from "../../src/plan/index.js";
-import { sharedContributor } from "../../src/plan/contributors/shared.js";
-import { monorepoContributor } from "../../src/plan/contributors/monorepo.js";
-import { tsContributor } from "../../src/plan/contributors/languages/ts.js";
-import { rustContributor } from "../../src/plan/contributors/languages/rust.js";
-import { pythonContributor } from "../../src/plan/contributors/languages/python.js";
-import { executePlan } from "../../src/scaffold/index.js";
+import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import type { Options } from '../../src/options.js';
+import { buildPlan } from '../../src/plan/index.js';
+import { sharedContributor } from '../../src/plan/contributors/shared.js';
+import { monorepoContributor } from '../../src/plan/contributors/monorepo.js';
+import { tsContributor } from '../../src/plan/contributors/languages/ts.js';
+import { rustContributor } from '../../src/plan/contributors/languages/rust.js';
+import { pythonContributor } from '../../src/plan/contributors/languages/python.js';
+import { executePlan } from '../../src/scaffold/index.js';
 
 const baseOpts: Options = {
-  name: "multi",
-  description: "Polyglot demo",
-  cwd: "/tmp",
-  languages: ["typescript", "rust"],
-  packageManager: "pnpm",
-  bunTest: "vitest",
-  monorepo: "turbo",
+  name: 'multi',
+  description: 'Polyglot demo',
+  cwd: '/tmp',
+  languages: ['typescript', 'rust'],
+  packageManager: 'pnpm',
+  bunTest: 'vitest',
+  monorepo: 'turbo',
   rustWorkspace: false,
   pythonWorkspace: false,
   ci: false,
   github: false,
-  githubVisibility: "private",
+  githubVisibility: 'private',
   git: true,
   commit: true,
   install: true,
@@ -1753,78 +1753,78 @@ const contributors = [
   pythonContributor,
 ];
 
-describe("Polyglot end-to-end scaffold", () => {
-  it("TS+Rust turbo produces monorepo root + apps/<name>/ + crates/<name>/", async () => {
-    const cwd = mkdtempSync(join(tmpdir(), "poly-ts-rust-"));
+describe('Polyglot end-to-end scaffold', () => {
+  it('TS+Rust turbo produces monorepo root + apps/<name>/ + crates/<name>/', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'poly-ts-rust-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, target, { ...baseOpts, cwd });
 
-    expect(existsSync(join(target, "turbo.json"))).toBe(true);
-    expect(existsSync(join(target, "package.json"))).toBe(true);
-    expect(existsSync(join(target, "pnpm-workspace.yaml"))).toBe(true);
-    expect(existsSync(join(target, "apps/multi/package.json"))).toBe(true);
-    expect(existsSync(join(target, "apps/multi/vite.config.ts"))).toBe(true);
-    expect(existsSync(join(target, "crates/multi/Cargo.toml"))).toBe(true);
-    expect(existsSync(join(target, "crates/multi/src/main.rs"))).toBe(true);
-    expect(existsSync(join(target, "README.md"))).toBe(true);
-    expect(existsSync(join(target, "AGENTS.md"))).toBe(true);
+    expect(existsSync(join(target, 'turbo.json'))).toBe(true);
+    expect(existsSync(join(target, 'package.json'))).toBe(true);
+    expect(existsSync(join(target, 'pnpm-workspace.yaml'))).toBe(true);
+    expect(existsSync(join(target, 'apps/multi/package.json'))).toBe(true);
+    expect(existsSync(join(target, 'apps/multi/vite.config.ts'))).toBe(true);
+    expect(existsSync(join(target, 'crates/multi/Cargo.toml'))).toBe(true);
+    expect(existsSync(join(target, 'crates/multi/src/main.rs'))).toBe(true);
+    expect(existsSync(join(target, 'README.md'))).toBe(true);
+    expect(existsSync(join(target, 'AGENTS.md'))).toBe(true);
   });
 
-  it("root package.json has turbo as a devDependency and is private", async () => {
-    const cwd = mkdtempSync(join(tmpdir(), "poly-ts-rust-"));
+  it('root package.json has turbo as a devDependency and is private', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'poly-ts-rust-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, target, { ...baseOpts, cwd });
 
-    const rootPkg = JSON.parse(readFileSync(join(target, "package.json"), "utf8")) as {
+    const rootPkg = JSON.parse(readFileSync(join(target, 'package.json'), 'utf8')) as {
       name: string;
       private: boolean;
       devDependencies: Record<string, string>;
       packageManager: string;
     };
-    expect(rootPkg.name).toBe("multi");
+    expect(rootPkg.name).toBe('multi');
     expect(rootPkg.private).toBe(true);
     expect(rootPkg.devDependencies.turbo).toBeDefined();
     expect(rootPkg.packageManager).toMatch(/^pnpm@/);
   });
 
-  it("app package.json does NOT include packageManager (only root does)", async () => {
-    const cwd = mkdtempSync(join(tmpdir(), "poly-ts-rust-"));
+  it('app package.json does NOT include packageManager (only root does)', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'poly-ts-rust-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, target, { ...baseOpts, cwd });
 
-    const appPkg = JSON.parse(readFileSync(join(target, "apps/multi/package.json"), "utf8")) as {
+    const appPkg = JSON.parse(readFileSync(join(target, 'apps/multi/package.json'), 'utf8')) as {
       packageManager?: string;
     };
     expect(appPkg.packageManager).toBeUndefined();
   });
 
-  it("TS+Rust+Python produces all three language sub-trees", async () => {
-    const opts: Options = { ...baseOpts, languages: ["typescript", "rust", "python"] };
-    const cwd = mkdtempSync(join(tmpdir(), "poly-all-"));
+  it('TS+Rust+Python produces all three language sub-trees', async () => {
+    const opts: Options = { ...baseOpts, languages: ['typescript', 'rust', 'python'] };
+    const cwd = mkdtempSync(join(tmpdir(), 'poly-all-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
     await executePlan(plan, target, { ...opts, cwd });
 
-    expect(existsSync(join(target, "apps/multi/package.json"))).toBe(true);
-    expect(existsSync(join(target, "crates/multi/Cargo.toml"))).toBe(true);
-    expect(existsSync(join(target, "py/multi/pyproject.toml"))).toBe(true);
-    expect(existsSync(join(target, "py/multi/src/multi/__init__.py"))).toBe(true);
+    expect(existsSync(join(target, 'apps/multi/package.json'))).toBe(true);
+    expect(existsSync(join(target, 'crates/multi/Cargo.toml'))).toBe(true);
+    expect(existsSync(join(target, 'py/multi/pyproject.toml'))).toBe(true);
+    expect(existsSync(join(target, 'py/multi/src/multi/__init__.py'))).toBe(true);
   });
 
-  it("mise.toml includes node, rust, and python for full polyglot", async () => {
-    const opts: Options = { ...baseOpts, languages: ["typescript", "rust", "python"] };
-    const cwd = mkdtempSync(join(tmpdir(), "poly-all-"));
+  it('mise.toml includes node, rust, and python for full polyglot', async () => {
+    const opts: Options = { ...baseOpts, languages: ['typescript', 'rust', 'python'] };
+    const cwd = mkdtempSync(join(tmpdir(), 'poly-all-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
     await executePlan(plan, target, { ...opts, cwd });
 
-    const mise = readFileSync(join(target, "mise.toml"), "utf8");
-    expect(mise).toContain("node =");
-    expect(mise).toContain("rust =");
-    expect(mise).toContain("python =");
+    const mise = readFileSync(join(target, 'mise.toml'), 'utf8');
+    expect(mise).toContain('node =');
+    expect(mise).toContain('rust =');
+    expect(mise).toContain('python =');
   });
 });
 ```

@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn } from 'node:child_process';
 
 export type ExecResult = { stdout: string; stderr: string; code: number };
 
@@ -17,23 +17,23 @@ export const exec = async (
     const child = spawn(command, args, {
       cwd: options.cwd,
       env: { ...process.env, ...options.env },
-      stdio: options.inherit ? "inherit" : "pipe",
+      stdio: options.inherit ? 'inherit' : 'pipe',
     });
 
-    let stdout = "";
-    let stderr = "";
+    let stdout = '';
+    let stderr = '';
 
-    child.stdout?.on("data", (chunk: Buffer) => {
+    child.stdout?.on('data', (chunk: Buffer) => {
       stdout += chunk.toString();
     });
 
-    child.stderr?.on("data", (chunk: Buffer) => {
+    child.stderr?.on('data', (chunk: Buffer) => {
       stderr += chunk.toString();
     });
 
-    child.on("error", reject);
+    child.on('error', reject);
 
-    child.on("close", (code) => {
+    child.on('close', (code) => {
       resolvePromise({ stdout, stderr, code: code ?? 0 });
     });
   });
@@ -41,7 +41,7 @@ export const exec = async (
 
 export const which = async (command: string): Promise<boolean> => {
   try {
-    const result = await exec(process.platform === "win32" ? "where" : "which", [command]);
+    const result = await exec(process.platform === 'win32' ? 'where' : 'which', [command]);
     return result.code === 0;
   } catch {
     return false;

@@ -1,55 +1,56 @@
-import { describe, expect, it } from "vitest";
-import { applyDefaults } from "./questions.js";
+import { describe, expect, it } from 'vitest';
 
-describe("applyDefaults", () => {
-  it("defaults monorepo to none for single-language TS", () => {
-    const out = applyDefaults({ cwd: "/tmp", languages: ["typescript"] });
-    expect(out.monorepo).toBe("none");
+import { applyDefaults } from './questions.js';
+
+describe('applyDefaults', () => {
+  it('defaults monorepo to none for single-language TS', () => {
+    const out = applyDefaults({ cwd: '/tmp', languages: ['typescript'] });
+    expect(out.monorepo).toBe('none');
   });
 
-  it("defaults monorepo to turbo for polyglot", () => {
-    const out = applyDefaults({ cwd: "/tmp", languages: ["typescript", "rust"] });
-    expect(out.monorepo).toBe("turbo");
+  it('defaults monorepo to turbo for polyglot', () => {
+    const out = applyDefaults({ cwd: '/tmp', languages: ['typescript', 'rust'] });
+    expect(out.monorepo).toBe('turbo');
   });
 
-  it("defaults packageManager to pnpm", () => {
-    const out = applyDefaults({ cwd: "/tmp", languages: ["typescript"] });
-    expect(out.packageManager).toBe("pnpm");
+  it('defaults packageManager to pnpm', () => {
+    const out = applyDefaults({ cwd: '/tmp', languages: ['typescript'] });
+    expect(out.packageManager).toBe('pnpm');
   });
 
-  it("defaults git/commit/install to true", () => {
-    const out = applyDefaults({ cwd: "/tmp", languages: ["typescript"] });
+  it('defaults git/commit/install to true', () => {
+    const out = applyDefaults({ cwd: '/tmp', languages: ['typescript'] });
     expect(out.git).toBe(true);
     expect(out.commit).toBe(true);
     expect(out.install).toBe(true);
   });
 
-  it("preserves explicitly-set values", () => {
+  it('preserves explicitly-set values', () => {
     const out = applyDefaults({
-      cwd: "/tmp",
-      languages: ["typescript"],
-      packageManager: "bun",
-      monorepo: "nx",
+      cwd: '/tmp',
+      languages: ['typescript'],
+      packageManager: 'bun',
+      monorepo: 'nx',
     });
-    expect(out.packageManager).toBe("bun");
-    expect(out.monorepo).toBe("nx");
+    expect(out.packageManager).toBe('bun');
+    expect(out.monorepo).toBe('nx');
   });
 
-  it("overrides monorepo: none to turbo when polyglot", () => {
+  it('overrides monorepo: none to turbo when polyglot', () => {
     const out = applyDefaults({
-      cwd: "/tmp",
-      languages: ["typescript", "rust"],
-      monorepo: "none",
+      cwd: '/tmp',
+      languages: ['typescript', 'rust'],
+      monorepo: 'none',
     });
-    expect(out.monorepo).toBe("turbo");
+    expect(out.monorepo).toBe('turbo');
   });
 
-  it("preserves monorepo: nx for polyglot when explicitly set", () => {
+  it('preserves monorepo: nx for polyglot when explicitly set', () => {
     const out = applyDefaults({
-      cwd: "/tmp",
-      languages: ["typescript", "rust"],
-      monorepo: "nx",
+      cwd: '/tmp',
+      languages: ['typescript', 'rust'],
+      monorepo: 'nx',
     });
-    expect(out.monorepo).toBe("nx");
+    expect(out.monorepo).toBe('nx');
   });
 });

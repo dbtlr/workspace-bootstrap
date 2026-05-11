@@ -1,4 +1,4 @@
-import type { Options } from "../options.js";
+import type { Options } from '../options.js';
 
 export type FilePlan = {
   /** Path to template file under `templates/`, e.g. `'shared/README.md.tmpl'`. */
@@ -12,7 +12,7 @@ export type FilePlan = {
 };
 
 export type PostStep = {
-  kind: "git-init" | "git-commit" | "install" | "hooks";
+  kind: 'git-init' | 'git-commit' | 'install' | 'hooks';
   args?: Record<string, string | boolean>;
 };
 

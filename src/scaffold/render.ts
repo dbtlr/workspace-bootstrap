@@ -1,8 +1,10 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import { Eta } from "eta";
-import type { Options } from "../options.js";
-import type { FilePlan } from "../plan/contributors.js";
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
+import { Eta } from 'eta';
+
+import type { Options } from '../options.js';
+import type { FilePlan } from '../plan/contributors.js';
 
 export type RenderContext = {
   name: string;
@@ -29,7 +31,7 @@ export const renderFile = async (
   plan: FilePlan,
   opts: Options,
   templatesRoot: string,
-  author: { name: string; email: string } = { name: "", email: "" },
+  author: { name: string; email: string } = { name: '', email: '' },
 ): Promise<string> => {
   if (plan.content !== undefined) {
     return plan.content;
@@ -39,9 +41,9 @@ export const renderFile = async (
   }
 
   const fullPath = join(templatesRoot, plan.template);
-  const source = await readFile(fullPath, "utf8");
+  const source = await readFile(fullPath, 'utf8');
 
-  if (plan.raw || !plan.template.endsWith(".tmpl")) {
+  if (plan.raw || !plan.template.endsWith('.tmpl')) {
     return source;
   }
 

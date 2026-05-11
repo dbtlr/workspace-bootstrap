@@ -1,5 +1,5 @@
-import type { Options } from "../options.js";
-import type { Contributor, PkgDeps, Plan } from "./contributors.js";
+import type { Options } from '../options.js';
+import type { Contributor, PkgDeps, Plan } from './contributors.js';
 
 const mergePkgDeps = (a: PkgDeps | undefined, b: PkgDeps | undefined): PkgDeps | undefined => {
   if (!a && !b) return undefined;
@@ -44,4 +44,4 @@ export const buildPlan = (opts: Options, contributors: Contributor[]): Plan => {
   return plan;
 };
 
-export type { Contributor, Plan } from "./contributors.js";
+export type { Contributor, Plan } from './contributors.js';

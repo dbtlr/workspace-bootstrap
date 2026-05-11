@@ -1,9 +1,10 @@
-import { mkdir, symlink, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import type { Options } from "../options.js";
-import type { Plan } from "../plan/contributors.js";
-import { templatesDir } from "../util/paths.js";
-import { renderFile } from "./render.js";
+import { mkdir, symlink, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+
+import type { Options } from '../options.js';
+import type { Plan } from '../plan/contributors.js';
+import { templatesDir } from '../util/paths.js';
+import { renderFile } from './render.js';
 
 export type ExecutePlanOptions = {
   templatesRoot?: string;
@@ -17,7 +18,7 @@ export const executePlan = async (
   execOpts: ExecutePlanOptions = {},
 ): Promise<void> => {
   const templatesRoot = execOpts.templatesRoot ?? templatesDir();
-  const author = execOpts.author ?? { name: "", email: "" };
+  const author = execOpts.author ?? { name: '', email: '' };
 
   await mkdir(targetDir, { recursive: true });
 
@@ -25,9 +26,9 @@ export const executePlan = async (
     const fullTarget = join(targetDir, file.target);
     await mkdir(dirname(fullTarget), { recursive: true });
 
-    if (file.target === "CLAUDE.md" && file.content === "@AGENTS.md\n") {
+    if (file.target === 'CLAUDE.md' && file.content === '@AGENTS.md\n') {
       try {
-        await symlink("AGENTS.md", fullTarget);
+        await symlink('AGENTS.md', fullTarget);
         continue;
       } catch {
         // Fall through to writeFile with the @AGENTS.md import-syntax content.
@@ -35,6 +36,6 @@ export const executePlan = async (
     }
 
     const content = await renderFile(file, opts, templatesRoot, author);
-    await writeFile(fullTarget, content, "utf8");
+    await writeFile(fullTarget, content, 'utf8');
   }
 };

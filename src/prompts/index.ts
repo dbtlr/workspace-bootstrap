@@ -1,7 +1,8 @@
-import * as clack from "@clack/prompts";
-import type { Options, PartialOptions } from "../options.js";
-import { OptionsSchema } from "../options.js";
-import { which } from "../util/exec.js";
+import * as clack from '@clack/prompts';
+
+import type { Options, PartialOptions } from '../options.js';
+import { OptionsSchema } from '../options.js';
+import { which } from '../util/exec.js';
 import {
   applyDefaults,
   askBunTest,
@@ -12,7 +13,7 @@ import {
   askMonorepo,
   askName,
   askPackageManager,
-} from "./questions.js";
+} from './questions.js';
 
 export type RunPromptsOptions = {
   nonInteractive: boolean;
@@ -27,13 +28,13 @@ export const runPrompts = async (
     const filled = applyDefaults(partial);
     const result = OptionsSchema.safeParse(filled);
     if (!result.success) {
-      const missing = result.error.issues.map((i) => i.path.join(".")).join(", ");
+      const missing = result.error.issues.map((i) => i.path.join('.')).join(', ');
       throw new Error(`Cannot run non-interactively — missing required fields: ${missing}`);
     }
     return result.data;
   }
 
-  clack.intro("create-workspace");
+  clack.intro('create-workspace');
 
   const name = await askName(partial.name);
   const description = await askDescription(partial.description);
@@ -42,7 +43,7 @@ export const runPrompts = async (
   const packageManager = await askPackageManager(partial.packageManager, languages);
   const bunTest = await askBunTest(partial.bunTest, packageManager, languages);
   const ci = await askCi(partial.ci);
-  const ghAvailable = await which("gh");
+  const ghAvailable = await which('gh');
   const github = await askGithub(partial.github, ghAvailable);
 
   const filled = applyDefaults({
@@ -58,6 +59,6 @@ export const runPrompts = async (
   });
 
   const result = OptionsSchema.parse(filled);
-  clack.outro("Got it — scaffolding…");
+  clack.outro('Got it — scaffolding…');
   return result;
 };

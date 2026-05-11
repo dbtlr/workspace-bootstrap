@@ -1,22 +1,23 @@
-import { existsSync, statSync } from "node:fs";
-import { isAbsolute, join, resolve } from "node:path";
-import { exec as nodeExec } from "./util/exec.js";
-import { createLogger } from "./util/log.js";
-import type { Options, PartialOptions } from "./options.js";
-import { runPrompts, type RunPromptsOptions } from "./prompts/index.js";
-import { buildPlan } from "./plan/index.js";
-import { sharedContributor } from "./plan/contributors/shared.js";
-import { monorepoContributor } from "./plan/contributors/monorepo.js";
-import { tsContributor } from "./plan/contributors/languages/ts.js";
-import { rustContributor } from "./plan/contributors/languages/rust.js";
-import { pythonContributor } from "./plan/contributors/languages/python.js";
-import { executePlan } from "./scaffold/index.js";
-import { runGit } from "./post/git.js";
-import { runInstall } from "./post/install.js";
+import { existsSync, statSync } from 'node:fs';
+import { isAbsolute, join, resolve } from 'node:path';
+
+import type { Options, PartialOptions } from './options.js';
+import { pythonContributor } from './plan/contributors/languages/python.js';
+import { rustContributor } from './plan/contributors/languages/rust.js';
+import { tsContributor } from './plan/contributors/languages/ts.js';
+import { monorepoContributor } from './plan/contributors/monorepo.js';
+import { sharedContributor } from './plan/contributors/shared.js';
+import { buildPlan } from './plan/index.js';
+import { runGit } from './post/git.js';
+import { runInstall } from './post/install.js';
+import { runPrompts, type RunPromptsOptions } from './prompts/index.js';
+import { executePlan } from './scaffold/index.js';
+import { exec as nodeExec } from './util/exec.js';
+import { createLogger } from './util/log.js';
 
 const detectAuthor = async (cwd: string): Promise<{ name: string; email: string }> => {
-  const nameResult = await nodeExec("git", ["config", "user.name"], { cwd });
-  const emailResult = await nodeExec("git", ["config", "user.email"], { cwd });
+  const nameResult = await nodeExec('git', ['config', 'user.name'], { cwd });
+  const emailResult = await nodeExec('git', ['config', 'user.email'], { cwd });
   return {
     name: nameResult.stdout.trim(),
     email: emailResult.stdout.trim(),
