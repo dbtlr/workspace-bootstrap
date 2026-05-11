@@ -1,4 +1,4 @@
-import * as clack from '@clack/prompts';
+import { intro, outro } from '@clack/prompts';
 
 import type { Options, PartialOptions } from '../options.js';
 import { OptionsSchema } from '../options.js';
@@ -20,22 +20,17 @@ export type RunPromptsOptions = {
   yes: boolean;
 };
 
-export const runPrompts = async (
-  partial: PartialOptions,
-  { nonInteractive, yes }: RunPromptsOptions,
-): Promise<Options> => {
-  if (nonInteractive || yes) {
-    const filled = applyDefaults(partial);
-    const result = OptionsSchema.safeParse(filled);
-    if (!result.success) {
-      const missing = result.error.issues.map((i) => i.path.join('.')).join(', ');
-      throw new Error(`Cannot run non-interactively — missing required fields: ${missing}`);
-    }
-    return result.data;
+const runNonInteractive = (partial: PartialOptions): Options => {
+  const filled = applyDefaults(partial);
+  const result = OptionsSchema.safeParse(filled);
+  if (!result.success) {
+    const missing = result.error.issues.map((issue) => issue.path.join('.')).join(', ');
+    throw new Error(`Cannot run non-interactively — missing required fields: ${missing}`);
   }
+  return result.data;
+};
 
-  clack.intro('create-workspace');
-
+const gatherAnswers = async (partial: PartialOptions): Promise<PartialOptions> => {
   const name = await askName(partial.name);
   const description = await askDescription(partial.description);
   const languages = await askLanguages(partial.languages);
@@ -45,20 +40,31 @@ export const runPrompts = async (
   const ci = await askCi(partial.ci);
   const ghAvailable = await which('gh');
   const github = await askGithub(partial.github, ghAvailable);
-
-  const filled = applyDefaults({
+  return {
     ...partial,
-    name,
-    description,
-    languages,
-    monorepo,
-    packageManager,
     bunTest,
     ci,
+    description,
     github,
-  });
+    languages,
+    monorepo,
+    name,
+    packageManager,
+  };
+};
 
+export const runPrompts = async (
+  partial: PartialOptions,
+  { nonInteractive, yes }: RunPromptsOptions,
+): Promise<Options> => {
+  if (nonInteractive || yes) {
+    return runNonInteractive(partial);
+  }
+
+  intro('create-workspace');
+  const answers = await gatherAnswers(partial);
+  const filled = applyDefaults(answers);
   const result = OptionsSchema.parse(filled);
-  clack.outro('Got it — scaffolding…');
+  outro('Got it — scaffolding…');
   return result;
 };

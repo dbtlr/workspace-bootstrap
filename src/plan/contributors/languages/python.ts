@@ -4,9 +4,9 @@ import { getSubPath } from '../../sub-paths.js';
 
 const moduleName = (name: string): string => name.replace(/-/g, '_');
 
-export const pythonContributor = (opts: Options): Contribution => {
+const pythonContributor = (opts: Options): Contribution => {
   if (!opts.languages.includes('python')) {
-    return { files: [], postSteps: [], deps: {} };
+    return { deps: {}, files: [], postSteps: [] };
   }
 
   const subPath = getSubPath('python', opts);
@@ -16,25 +16,25 @@ export const pythonContributor = (opts: Options): Contribution => {
 
   const files: FilePlan[] = [];
 
-  files.push({ template: 'python/ruff.toml', target: 'ruff.toml' });
+  files.push({ target: 'ruff.toml', template: 'python/ruff.toml' });
 
   if (emitWorkspaceRoot) {
     files.push({
-      template: 'python/workspace-pyproject.toml.tmpl',
       target: 'pyproject.toml',
+      template: 'python/workspace-pyproject.toml.tmpl',
     });
   }
 
   const pkgPath = isWorkspaceLayout ? `${subPath}/` : '';
   files.push(
-    { template: 'python/pyproject.toml.tmpl', target: `${pkgPath}pyproject.toml` },
+    { target: `${pkgPath}pyproject.toml`, template: 'python/pyproject.toml.tmpl' },
     {
-      template: 'python/package/__init__.py.tmpl',
       target: `${pkgPath}src/${pkgName}/__init__.py`,
+      template: 'python/package/__init__.py.tmpl',
     },
     {
-      template: 'python/tests/test_smoke.py.tmpl',
       target: `${pkgPath}tests/test_smoke.py`,
+      template: 'python/tests/test_smoke.py.tmpl',
     },
   );
 
@@ -43,8 +43,10 @@ export const pythonContributor = (opts: Options): Contribution => {
   }
 
   return {
+    deps: {},
     files,
     postSteps: [],
-    deps: {},
   };
 };
+
+export default pythonContributor;

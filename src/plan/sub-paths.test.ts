@@ -4,25 +4,25 @@ import type { Options } from '../options.js';
 import { getSubPath, isPolyglot } from './sub-paths.js';
 
 const baseOptions: Options = {
-  name: 'foo',
-  description: '',
-  cwd: '/tmp',
-  languages: ['typescript'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: '',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['typescript'],
+  monorepo: 'none',
+  name: 'foo',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-describe('isPolyglot', () => {
+describe(isPolyglot, () => {
   it('returns false for single language', () => {
     expect(isPolyglot(baseOptions)).toBe(false);
   });
@@ -32,7 +32,7 @@ describe('isPolyglot', () => {
   });
 });
 
-describe('getSubPath', () => {
+describe(getSubPath, () => {
   it('returns empty string for TS without monorepo', () => {
     expect(getSubPath('typescript', baseOptions)).toBe('');
   });

@@ -14,6 +14,10 @@ CLI for scaffolding new workspaces with modern TS/Rust/Python tooling.
 - `pnpm test` — run vitest via `vp test`
 - `pnpm build` — bundle to `dist/` via `vp pack`
 
+## Code Quality
+
+- Treat all linter warnings as errors. If you encounter a warning, fix it before committing.
+
 ## Code conventions
 
 - Strict TS, `verbatimModuleSyntax`, `noUncheckedIndexedAccess`.

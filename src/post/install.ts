@@ -10,22 +10,22 @@ export const installCommandsFor = (opts: Options): InstallCommand[] => {
 
   if (opts.languages.includes('typescript')) {
     const pm = opts.packageManager;
-    cmds.push({ tool: pm, args: ['install'] });
+    cmds.push({ args: ['install'], tool: pm });
     const usingVitePlus = !(pm === 'bun' && opts.bunTest === 'bun');
     if (usingVitePlus) {
-      cmds.push({ tool: pm, args: ['exec', 'vp', 'config'] });
+      cmds.push({ args: ['exec', 'vp', 'config'], tool: pm });
     }
   }
 
   if (opts.languages.includes('rust')) {
     const hasRootCargoToml = opts.rustWorkspace || !isPolyglot(opts);
     if (hasRootCargoToml) {
-      cmds.push({ tool: 'cargo', args: ['fetch'] });
+      cmds.push({ args: ['fetch'], tool: 'cargo' });
     }
   }
 
   if (opts.languages.includes('python')) {
-    cmds.push({ tool: 'uv', args: ['sync'] });
+    cmds.push({ args: ['sync'], tool: 'uv' });
   }
 
   return cmds;
@@ -39,17 +39,20 @@ export const runInstall = async (targetDir: string, opts: Options, log: Logger):
   }
 
   for (const { tool, args } of cmds) {
-    if (!(await which(tool))) {
+    // eslint-disable-next-line no-await-in-loop
+    const toolFound = await which(tool);
+    if (!toolFound) {
       log.warn(
         `${tool} not found on PATH — skipping \`${tool} ${args.join(' ')}\`. Run it manually.`,
       );
-      continue;
-    }
-    log.info(`Running ${tool} ${args.join(' ')}…`);
-    const result = await exec(tool, args, { cwd: targetDir, inherit: true });
-    if (result.code !== 0) {
-      log.error(`${tool} ${args.join(' ')} failed (exit ${result.code}).`);
-      return;
+    } else {
+      log.info(`Running ${tool} ${args.join(' ')}…`);
+      // eslint-disable-next-line no-await-in-loop
+      const installResult = await exec(tool, args, { cwd: targetDir, inherit: true });
+      if (installResult.code !== 0) {
+        log.error(`${tool} ${args.join(' ')} failed (exit ${installResult.code}).`);
+        return;
+      }
     }
   }
 };

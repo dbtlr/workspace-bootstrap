@@ -22,9 +22,12 @@
 <% if (it.options.languages.includes('python')) { %>- `uv run ruff check` / `uv run pytest`
 <% } %>
 
+## Code Quality
+
+- Treat all linter warnings as errors. If you encounter a warning, fix it before committing.
+
 ## Code conventions
 
 - TDD: failing test → minimal implementation → passing test → commit.
-- Treat all linter warnings as errors.
 - Keep functions small and focused.
 - Document architecture in `docs/architecture/` when adding subsystems.

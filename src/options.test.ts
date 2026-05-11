@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { OptionsSchema, validateName } from './options.js';
 
-describe('validateName', () => {
+describe(validateName, () => {
   it('accepts valid npm package names', () => {
     expect(validateName('my-project').success).toBe(true);
     expect(validateName('foo123').success).toBe(true);
@@ -26,25 +26,25 @@ describe('validateName', () => {
   });
 });
 
-describe('OptionsSchema', () => {
+describe(OptionsSchema.parse.bind(OptionsSchema), () => {
   it('parses a minimal valid options object', () => {
     const result = OptionsSchema.parse({
-      name: 'foo',
-      cwd: '/tmp',
-      languages: ['typescript'],
-      packageManager: 'pnpm',
       bunTest: 'vitest',
-      monorepo: 'none',
-      rustWorkspace: false,
-      pythonWorkspace: false,
       ci: false,
+      commit: true,
+      cwd: '/tmp',
+      description: '',
+      git: true,
       github: false,
       githubVisibility: 'private',
-      git: true,
-      commit: true,
       install: true,
+      languages: ['typescript'],
+      monorepo: 'none',
+      name: 'foo',
+      packageManager: 'pnpm',
+      pythonWorkspace: false,
+      rustWorkspace: false,
       verbose: false,
-      description: '',
     });
     expect(result.name).toBe('foo');
     expect(result.languages).toEqual(['typescript']);
@@ -52,22 +52,22 @@ describe('OptionsSchema', () => {
 
   it('rejects empty languages array', () => {
     const result = OptionsSchema.safeParse({
-      name: 'foo',
-      cwd: '/tmp',
-      languages: [],
-      packageManager: 'pnpm',
       bunTest: 'vitest',
-      monorepo: 'none',
-      rustWorkspace: false,
-      pythonWorkspace: false,
       ci: false,
+      commit: true,
+      cwd: '/tmp',
+      description: '',
+      git: true,
       github: false,
       githubVisibility: 'private',
-      git: true,
-      commit: true,
       install: true,
+      languages: [],
+      monorepo: 'none',
+      name: 'foo',
+      packageManager: 'pnpm',
+      pythonWorkspace: false,
+      rustWorkspace: false,
       verbose: false,
-      description: '',
     });
     expect(result.success).toBe(false);
   });

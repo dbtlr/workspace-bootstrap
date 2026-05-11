@@ -2,9 +2,9 @@ import { existsSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
-import { templatesDir } from './paths.js';
+import templatesDir from './paths.js';
 
-describe('templatesDir', () => {
+describe(templatesDir, () => {
   it('resolves to a directory that exists', () => {
     const dir = templatesDir();
     expect(existsSync(dir)).toBe(true);
@@ -12,6 +12,6 @@ describe('templatesDir', () => {
 
   it('points to the templates dir at the repo root', () => {
     const dir = templatesDir();
-    expect(dir.endsWith('/templates') || dir.endsWith('\\templates')).toBe(true);
+    expect(dir.endsWith('/templates') || dir.endsWith(String.raw`\templates`)).toBe(true);
   });
 });

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { applyDefaults } from './questions.js';
 
-describe('applyDefaults', () => {
+describe(applyDefaults, () => {
   it('defaults monorepo to none for single-language TS', () => {
     const out = applyDefaults({ cwd: '/tmp', languages: ['typescript'] });
     expect(out.monorepo).toBe('none');
@@ -29,8 +29,8 @@ describe('applyDefaults', () => {
     const out = applyDefaults({
       cwd: '/tmp',
       languages: ['typescript'],
-      packageManager: 'bun',
       monorepo: 'nx',
+      packageManager: 'bun',
     });
     expect(out.packageManager).toBe('bun');
     expect(out.monorepo).toBe('nx');

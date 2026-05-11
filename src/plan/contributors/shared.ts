@@ -9,23 +9,25 @@ const gitignoreFragments = (languages: Language[]): string[] => [
   ...languages.map(fragmentForLanguage),
 ];
 
-export const sharedContributor = (opts: Options): Contribution => {
+const sharedContributor = (opts: Options): Contribution => {
   const files: FilePlan[] = [
-    { template: 'shared/README.md.tmpl', target: 'README.md' },
-    { template: 'shared/AGENTS.md.tmpl', target: 'AGENTS.md' },
-    { template: 'shared/.editorconfig', target: '.editorconfig' },
-    { template: 'shared/mise.toml.tmpl', target: 'mise.toml' },
+    { target: 'README.md', template: 'shared/README.md.tmpl' },
+    { target: 'AGENTS.md', template: 'shared/AGENTS.md.tmpl' },
+    { target: '.editorconfig', template: 'shared/.editorconfig' },
+    { target: 'mise.toml', template: 'shared/mise.toml.tmpl' },
     {
-      target: '.gitignore',
       compose: { fragments: gitignoreFragments(opts.languages) },
       raw: true,
+      target: '.gitignore',
     },
-    { target: 'CLAUDE.md', content: '@AGENTS.md\n', raw: true },
+    { content: '@AGENTS.md\n', raw: true, target: 'CLAUDE.md' },
   ];
 
   return {
+    deps: {},
     files,
     postSteps: [],
-    deps: {},
   };
 };
+
+export default sharedContributor;

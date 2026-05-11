@@ -8,35 +8,35 @@ import type { Options } from '../options.js';
 import { renderFile } from './render.js';
 
 const baseOptions: Options = {
-  name: 'foo',
-  description: 'My project',
-  cwd: '/tmp',
-  languages: ['typescript'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: 'My project',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['typescript'],
+  monorepo: 'none',
+  name: 'foo',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-let tmpRoot: string;
+let tmpRoot = '';
 beforeEach(() => {
   tmpRoot = mkdtempSync(join(tmpdir(), 'render-test-'));
 });
 
-describe('renderFile', () => {
+describe(renderFile, () => {
   it('returns content verbatim when raw is true', async () => {
     const result = await renderFile(
-      { target: 'foo.txt', content: 'hello', raw: true },
+      { content: 'hello', raw: true, target: 'foo.txt' },
       baseOptions,
-      tmpRoot,
+      { templatesRoot: tmpRoot },
     );
     expect(result).toBe('hello');
   });
@@ -45,9 +45,9 @@ describe('renderFile', () => {
     const templatePath = join(tmpRoot, 'sample.txt.tmpl');
     writeFileSync(templatePath, 'name=<%= it.name %>');
     const result = await renderFile(
-      { template: 'sample.txt.tmpl', target: 'sample.txt' },
+      { target: 'sample.txt', template: 'sample.txt.tmpl' },
       baseOptions,
-      tmpRoot,
+      { templatesRoot: tmpRoot },
     );
     expect(result).toBe('name=foo');
   });
@@ -59,9 +59,9 @@ describe('renderFile', () => {
       '<% if (it.options.packageManager === "pnpm") { %>pnpm<% } else { %>bun<% } %>',
     );
     const result = await renderFile(
-      { template: 'sample.md.tmpl', target: 'sample.md' },
+      { target: 'sample.md', template: 'sample.md.tmpl' },
       baseOptions,
-      tmpRoot,
+      { templatesRoot: tmpRoot },
     );
     expect(result).toBe('pnpm');
   });
@@ -69,43 +69,41 @@ describe('renderFile', () => {
   it('plain-copies templates with no .tmpl suffix', async () => {
     const templatePath = join(tmpRoot, 'static.txt');
     writeFileSync(templatePath, 'literal content');
-    const result = await renderFile(
-      { template: 'static.txt', target: 'static.txt' },
-      baseOptions,
-      tmpRoot,
-    );
+    const result = await renderFile({ target: 'static.txt', template: 'static.txt' }, baseOptions, {
+      templatesRoot: tmpRoot,
+    });
     expect(result).toBe('literal content');
   });
 
   it('throws when neither template, content, nor compose is set', async () => {
-    await expect(renderFile({ target: 'foo.txt' }, baseOptions, tmpRoot)).rejects.toThrow(
-      /neither template, content, nor compose/,
-    );
+    await expect(
+      renderFile({ target: 'foo.txt' }, baseOptions, { templatesRoot: tmpRoot }),
+    ).rejects.toThrow(/neither template, content, nor compose/);
   });
 
   it('composes content from fragments under templates/fragments/', async () => {
-    const { mkdirSync, writeFileSync } = await import('node:fs');
+    const { mkdirSync, writeFileSync: writeFragmentSync } = await import('node:fs');
     mkdirSync(join(tmpRoot, 'fragments'), { recursive: true });
-    writeFileSync(join(tmpRoot, 'fragments', 'one'), 'first\n');
-    writeFileSync(join(tmpRoot, 'fragments', 'two'), 'second\n');
+    writeFragmentSync(join(tmpRoot, 'fragments', 'one'), 'first\n');
+    writeFragmentSync(join(tmpRoot, 'fragments', 'two'), 'second\n');
 
     const result = await renderFile(
-      { target: '.gitignore', compose: { fragments: ['one', 'two'] }, raw: true },
+      { compose: { fragments: ['one', 'two'] }, raw: true, target: '.gitignore' },
       baseOptions,
-      tmpRoot,
+      { templatesRoot: tmpRoot },
     );
     expect(result).toBe('first\n\nsecond\n');
   });
 
   it('compose silently skips missing fragments', async () => {
-    const { mkdirSync, writeFileSync } = await import('node:fs');
+    const { mkdirSync, writeFileSync: writeFragmentSync } = await import('node:fs');
     mkdirSync(join(tmpRoot, 'fragments'), { recursive: true });
-    writeFileSync(join(tmpRoot, 'fragments', 'only'), 'present\n');
+    writeFragmentSync(join(tmpRoot, 'fragments', 'only'), 'present\n');
 
     const result = await renderFile(
-      { target: '.gitignore', compose: { fragments: ['only', 'missing'] }, raw: true },
+      { compose: { fragments: ['only', 'missing'] }, raw: true, target: '.gitignore' },
       baseOptions,
-      tmpRoot,
+      { templatesRoot: tmpRoot },
     );
     expect(result).toBe('present\n');
   });
@@ -114,9 +112,9 @@ describe('renderFile', () => {
     const templatePath = join(tmpRoot, 'literal.txt.tmpl');
     writeFileSync(templatePath, 'name=<%= it.name %>');
     const result = await renderFile(
-      { template: 'literal.txt.tmpl', target: 'literal.txt', raw: true },
+      { raw: true, target: 'literal.txt', template: 'literal.txt.tmpl' },
       baseOptions,
-      tmpRoot,
+      { templatesRoot: tmpRoot },
     );
     expect(result).toBe('name=<%= it.name %>');
   });

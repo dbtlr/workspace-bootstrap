@@ -5,39 +5,39 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import type { Options } from '../../src/options.js';
-import { pythonContributor } from '../../src/plan/contributors/languages/python.js';
-import { monorepoContributor } from '../../src/plan/contributors/monorepo.js';
-import { sharedContributor } from '../../src/plan/contributors/shared.js';
+import pythonContributor from '../../src/plan/contributors/languages/python.js';
+import monorepoContributor from '../../src/plan/contributors/monorepo.js';
+import sharedContributor from '../../src/plan/contributors/shared.js';
 import { buildPlan } from '../../src/plan/index.js';
 import { executePlan } from '../../src/scaffold/index.js';
 
 const baseOpts: Options = {
-  name: 'pythy',
-  description: 'A Python demo',
-  cwd: '/tmp',
-  languages: ['python'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: 'A Python demo',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['python'],
+  monorepo: 'none',
+  name: 'pythy',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
 const contributors = [sharedContributor, monorepoContributor, pythonContributor];
 
-describe('Python-only end-to-end scaffold', () => {
+describe('python-only end-to-end scaffold', () => {
   it('single-package produces pyproject + src/<name>/', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'py-single-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
-    await executePlan(plan, target, { ...baseOpts, cwd });
+    await executePlan(plan, { ...baseOpts, cwd }, { targetDir: target });
 
     expect(existsSync(join(target, 'pyproject.toml'))).toBe(true);
     expect(existsSync(join(target, 'ruff.toml'))).toBe(true);
@@ -50,7 +50,7 @@ describe('Python-only end-to-end scaffold', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'py-hyphen-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
     expect(existsSync(join(target, 'src/my_py_app/__init__.py'))).toBe(true);
   });
@@ -60,7 +60,7 @@ describe('Python-only end-to-end scaffold', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'py-ws-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
     const rootPy = readFileSync(join(target, 'pyproject.toml'), 'utf8');
     expect(rootPy).toContain('[tool.uv.workspace]');
@@ -79,7 +79,7 @@ describe('Python-only end-to-end scaffold', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'py-poly-ws-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
     const rootPy = readFileSync(join(target, 'pyproject.toml'), 'utf8');
     expect(rootPy).toContain('members = ["py/*"]');

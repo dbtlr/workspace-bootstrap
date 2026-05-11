@@ -2,7 +2,7 @@ import type { Options } from '../options.js';
 import { exec } from '../util/exec.js';
 import type { Logger } from '../util/log.js';
 
-export const runGit = async (targetDir: string, opts: Options, log: Logger): Promise<void> => {
+const runGit = async (targetDir: string, opts: Options, log: Logger): Promise<void> => {
   log.info('Initializing git repo…');
   const init = await exec('git', ['init', '-q'], { cwd: targetDir });
   if (init.code !== 0) {
@@ -30,3 +30,5 @@ export const runGit = async (targetDir: string, opts: Options, log: Logger): Pro
   }
   log.success('Initial commit created.');
 };
+
+export default runGit;

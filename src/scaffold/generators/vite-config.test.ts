@@ -1,28 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Options } from '../../options.js';
-import { renderViteConfig } from './viteConfig.js';
+import renderViteConfig from './vite-config.js';
 
 const baseOptions: Options = {
-  name: 'foo',
-  description: '',
-  cwd: '/tmp',
-  languages: ['typescript'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: '',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['typescript'],
+  monorepo: 'none',
+  name: 'foo',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-describe('renderViteConfig', () => {
+describe(renderViteConfig, () => {
   it('includes the defineConfig import and call', () => {
     const out = renderViteConfig(baseOptions);
     expect(out).toContain("import { defineConfig } from 'vite-plus'");
@@ -36,7 +36,7 @@ describe('renderViteConfig', () => {
   });
 
   it('omits the staged block when bunTest is bun-only (no vp)', () => {
-    const out = renderViteConfig({ ...baseOptions, packageManager: 'bun', bunTest: 'bun' });
+    const out = renderViteConfig({ ...baseOptions, bunTest: 'bun', packageManager: 'bun' });
     expect(out).not.toContain('staged:');
   });
 

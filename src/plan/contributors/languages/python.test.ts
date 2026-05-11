@@ -1,28 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Options } from '../../../options.js';
-import { pythonContributor } from './python.js';
+import pythonContributor from './python.js';
 
 const baseOptions: Options = {
-  name: 'foo',
-  description: '',
-  cwd: '/tmp',
-  languages: ['python'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: '',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['python'],
+  monorepo: 'none',
+  name: 'foo',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-describe('pythonContributor', () => {
+describe(pythonContributor, () => {
   it('returns empty contribution when python is not in languages', () => {
     const contribution = pythonContributor({ ...baseOptions, languages: ['rust'] });
     expect(contribution.files).toHaveLength(0);
@@ -30,7 +30,7 @@ describe('pythonContributor', () => {
 
   it('contributes pyproject + ruff + __init__ + tests at root for single-package', () => {
     const contribution = pythonContributor(baseOptions);
-    const targets = contribution.files.map((f) => f.target);
+    const targets = contribution.files.map((file) => file.target);
     expect(targets).toContain('pyproject.toml');
     expect(targets).toContain('ruff.toml');
     expect(targets).toContain('src/foo/__init__.py');
@@ -39,14 +39,14 @@ describe('pythonContributor', () => {
 
   it('uses underscored package name for hyphenated project names', () => {
     const contribution = pythonContributor({ ...baseOptions, name: 'my-app' });
-    const targets = contribution.files.map((f) => f.target);
+    const targets = contribution.files.map((file) => file.target);
     expect(targets).toContain('src/my_app/__init__.py');
   });
 
   it('emits workspace root + packages/<name>/ when pythonWorkspace is true', () => {
     const contribution = pythonContributor({ ...baseOptions, pythonWorkspace: true });
-    const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain('pyproject.toml'); // workspace root
+    const targets = contribution.files.map((file) => file.target);
+    expect(targets).toContain('pyproject.toml'); // Workspace root
     expect(targets).toContain('packages/foo/pyproject.toml');
     expect(targets).toContain('packages/foo/src/foo/__init__.py');
     expect(targets).toContain('packages/foo/tests/test_smoke.py');
@@ -54,7 +54,7 @@ describe('pythonContributor', () => {
 
   it('emits the workspace-pyproject template at root when pythonWorkspace is true', () => {
     const contribution = pythonContributor({ ...baseOptions, pythonWorkspace: true });
-    const rootPyproject = contribution.files.find((f) => f.target === 'pyproject.toml');
+    const rootPyproject = contribution.files.find((file) => file.target === 'pyproject.toml');
     expect(rootPyproject?.template).toBe('python/workspace-pyproject.toml.tmpl');
   });
 
@@ -65,10 +65,10 @@ describe('pythonContributor', () => {
       monorepo: 'turbo',
     };
     const contribution = pythonContributor(polyglotOpts);
-    const targets = contribution.files.map((f) => f.target);
+    const targets = contribution.files.map((file) => file.target);
     expect(targets).toContain('py/foo/pyproject.toml');
     expect(targets).toContain('py/foo/src/foo/__init__.py');
-    expect(targets).not.toContain('pyproject.toml'); // no workspace root because pythonWorkspace is false
+    expect(targets).not.toContain('pyproject.toml'); // No workspace root because pythonWorkspace is false
   });
 
   it('emits both py/<name>/ AND workspace root in polyglot + pythonWorkspace mode', () => {
@@ -79,7 +79,7 @@ describe('pythonContributor', () => {
       pythonWorkspace: true,
     };
     const contribution = pythonContributor(polyglotOpts);
-    const targets = contribution.files.map((f) => f.target);
+    const targets = contribution.files.map((file) => file.target);
     expect(targets).toContain('pyproject.toml');
     expect(targets).toContain('py/foo/pyproject.toml');
   });

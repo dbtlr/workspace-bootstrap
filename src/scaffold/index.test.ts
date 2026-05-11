@@ -9,36 +9,36 @@ import type { Plan } from '../plan/contributors.js';
 import { executePlan } from './index.js';
 
 const baseOptions: Options = {
-  name: 'foo',
-  description: '',
-  cwd: '/tmp',
-  languages: ['typescript'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: '',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['typescript'],
+  monorepo: 'none',
+  name: 'foo',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-describe('executePlan', () => {
+describe(executePlan, () => {
   it('writes raw-content files into the target directory', async () => {
     const targetDir = mkdtempSync(join(tmpdir(), 'exec-plan-'));
     const plan: Plan = {
+      deps: {},
       files: [
-        { target: 'README.md', content: '# foo\n', raw: true },
-        { target: 'config/app.json', content: '{}\n', raw: true },
+        { content: '# foo\n', raw: true, target: 'README.md' },
+        { content: '{}\n', raw: true, target: 'config/app.json' },
       ],
       postSteps: [],
-      deps: {},
     };
-    await executePlan(plan, targetDir, baseOptions);
+    await executePlan(plan, baseOptions, { targetDir });
     expect(readFileSync(join(targetDir, 'README.md'), 'utf8')).toBe('# foo\n');
     expect(readFileSync(join(targetDir, 'config/app.json'), 'utf8')).toBe('{}\n');
   });
@@ -46,25 +46,25 @@ describe('executePlan', () => {
   it('creates nested directories as needed', async () => {
     const targetDir = mkdtempSync(join(tmpdir(), 'exec-plan-'));
     const plan: Plan = {
-      files: [{ target: 'src/util/foo.ts', content: 'export {}', raw: true }],
-      postSteps: [],
       deps: {},
+      files: [{ content: 'export {}', raw: true, target: 'src/util/foo.ts' }],
+      postSteps: [],
     };
-    await executePlan(plan, targetDir, baseOptions);
+    await executePlan(plan, baseOptions, { targetDir });
     expect(readFileSync(join(targetDir, 'src/util/foo.ts'), 'utf8')).toBe('export {}');
   });
 
   it('creates CLAUDE.md as a symlink to AGENTS.md', async () => {
     const targetDir = mkdtempSync(join(tmpdir(), 'exec-plan-'));
     const plan: Plan = {
+      deps: {},
       files: [
-        { target: 'AGENTS.md', content: '# AGENTS\n', raw: true },
-        { target: 'CLAUDE.md', content: '@AGENTS.md\n', raw: true },
+        { content: '# AGENTS\n', raw: true, target: 'AGENTS.md' },
+        { content: '@AGENTS.md\n', raw: true, target: 'CLAUDE.md' },
       ],
       postSteps: [],
-      deps: {},
     };
-    await executePlan(plan, targetDir, baseOptions);
+    await executePlan(plan, baseOptions, { targetDir });
 
     const claudeMdPath = join(targetDir, 'CLAUDE.md');
     const stat = lstatSync(claudeMdPath);

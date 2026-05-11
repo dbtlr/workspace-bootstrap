@@ -5,36 +5,36 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import type { Options } from '../../src/options.js';
-import { tsContributor } from '../../src/plan/contributors/languages/ts.js';
-import { sharedContributor } from '../../src/plan/contributors/shared.js';
+import tsContributor from '../../src/plan/contributors/languages/ts.js';
+import sharedContributor from '../../src/plan/contributors/shared.js';
 import { buildPlan } from '../../src/plan/index.js';
 import { executePlan } from '../../src/scaffold/index.js';
 
 const opts: Options = {
-  name: 'demo-app',
-  description: 'A demo',
-  cwd: '/tmp',
-  languages: ['typescript'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: 'A demo',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['typescript'],
+  monorepo: 'none',
+  name: 'demo-app',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-describe('TS-only end-to-end scaffold', () => {
+describe('tS-only end-to-end scaffold', () => {
   it('produces a complete project structure', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'e2e-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, [sharedContributor, tsContributor]);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
     const expectedFiles = [
       'README.md',
@@ -58,25 +58,20 @@ describe('TS-only end-to-end scaffold', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'e2e-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, [sharedContributor, tsContributor]);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
-    const pkg = JSON.parse(readFileSync(join(target, 'package.json'), 'utf8')) as {
-      name: string;
-      type: string;
-      dependencies: Record<string, string>;
-      devDependencies: Record<string, string>;
-    };
+    const pkg = JSON.parse(readFileSync(join(target, 'package.json'), 'utf8'));
     expect(pkg.name).toBe('demo-app');
     expect(pkg.type).toBe('module');
     expect(pkg.devDependencies['vite-plus']).toBeDefined();
     expect(pkg.devDependencies.typescript).toBeDefined();
   });
 
-  it('README.md interpolates the project name', async () => {
+  it('rEADME.md interpolates the project name', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'e2e-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, [sharedContributor, tsContributor]);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
     const readme = readFileSync(join(target, 'README.md'), 'utf8');
     expect(readme).toContain('# demo-app');
@@ -86,7 +81,7 @@ describe('TS-only end-to-end scaffold', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'e2e-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, [sharedContributor, tsContributor]);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
     const viteConfig = readFileSync(join(target, 'vite.config.ts'), 'utf8');
     expect(viteConfig).toContain('staged:');

@@ -1,17 +1,22 @@
 import type { Options } from '../options.js';
 import type { Contributor, PkgDeps, Plan } from './contributors.js';
 
-const mergePkgDeps = (a: PkgDeps | undefined, b: PkgDeps | undefined): PkgDeps | undefined => {
-  if (!a && !b) return undefined;
+const mergePkgDeps = (
+  base: PkgDeps | undefined,
+  extra: PkgDeps | undefined,
+): PkgDeps | undefined => {
+  if (!base && !extra) {
+    return undefined;
+  }
   return {
-    dependencies: { ...a?.dependencies, ...b?.dependencies },
-    devDependencies: { ...a?.devDependencies, ...b?.devDependencies },
-    scripts: { ...a?.scripts, ...b?.scripts },
+    dependencies: { ...base?.dependencies, ...extra?.dependencies },
+    devDependencies: { ...base?.devDependencies, ...extra?.devDependencies },
+    scripts: { ...base?.scripts, ...extra?.scripts },
   };
 };
 
 export const buildPlan = (opts: Options, contributors: Contributor[]): Plan => {
-  const plan: Plan = { files: [], postSteps: [], deps: {} };
+  const plan: Plan = { deps: {}, files: [], postSteps: [] };
   for (const contributor of contributors) {
     const contribution = contributor(opts);
     plan.files.push(...contribution.files);

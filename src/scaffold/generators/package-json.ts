@@ -6,9 +6,9 @@ const BUN_VERSION = '1.1.0';
 
 const baseScripts = (opts: Options): Record<string, string> => {
   const scripts: Record<string, string> = {
-    dev: 'tsx src/index.ts',
     build: 'vp pack',
     check: 'vp check',
+    dev: 'tsx src/index.ts',
     test: 'vp test',
     'test:watch': 'vp test --watch',
   };
@@ -33,23 +33,23 @@ const baseDeps = (): PkgDeps => ({
   },
 });
 
-export const renderPackageJson = (opts: Options, contributed: PkgDeps): string => {
+const renderPackageJson = (opts: Options, contributed: PkgDeps): string => {
   const base = baseDeps();
   const scripts = { ...baseScripts(opts), ...contributed.scripts };
   const dependencies = { ...base.dependencies, ...contributed.dependencies };
   const devDependencies = { ...base.devDependencies, ...contributed.devDependencies };
 
   const pkg: Record<string, unknown> = {
-    name: opts.name,
-    version: '0.0.1',
-    description: opts.description,
-    type: 'module',
-    scripts,
     dependencies,
+    description: opts.description,
     devDependencies,
+    name: opts.name,
+    scripts,
+    type: 'module',
+    version: '0.0.1',
   };
 
-  // packageManager and engines belong on the root package.json only.
+  // PackageManager and engines belong on the root package.json only.
   // In monorepo mode, the monorepo root carries them; this is a workspace member.
   if (opts.monorepo === 'none') {
     pkg.packageManager =
@@ -59,3 +59,5 @@ export const renderPackageJson = (opts: Options, contributed: PkgDeps): string =
 
   return `${JSON.stringify(pkg, null, 2)}\n`;
 };
+
+export default renderPackageJson;

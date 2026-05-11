@@ -4,54 +4,54 @@ import type { Options } from '../options.js';
 import { installCommandsFor } from './install.js';
 
 const baseOptions: Options = {
-  name: 'foo',
-  description: '',
-  cwd: '/tmp',
-  languages: ['typescript'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: '',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['typescript'],
+  monorepo: 'none',
+  name: 'foo',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-describe('installCommandsFor', () => {
+describe(installCommandsFor, () => {
   it('returns pnpm install for TS+pnpm', () => {
     const cmds = installCommandsFor(baseOptions);
     expect(cmds).toEqual([
-      { tool: 'pnpm', args: ['install'] },
-      { tool: 'pnpm', args: ['exec', 'vp', 'config'] },
+      { args: ['install'], tool: 'pnpm' },
+      { args: ['exec', 'vp', 'config'], tool: 'pnpm' },
     ]);
   });
 
   it('returns bun install for TS+bun (vitest)', () => {
     const cmds = installCommandsFor({ ...baseOptions, packageManager: 'bun' });
     expect(cmds).toEqual([
-      { tool: 'bun', args: ['install'] },
-      { tool: 'bun', args: ['exec', 'vp', 'config'] },
+      { args: ['install'], tool: 'bun' },
+      { args: ['exec', 'vp', 'config'], tool: 'bun' },
     ]);
   });
 
   it('omits vp config when bunTest is bun-only', () => {
-    const cmds = installCommandsFor({ ...baseOptions, packageManager: 'bun', bunTest: 'bun' });
-    expect(cmds).toEqual([{ tool: 'bun', args: ['install'] }]);
+    const cmds = installCommandsFor({ ...baseOptions, bunTest: 'bun', packageManager: 'bun' });
+    expect(cmds).toEqual([{ args: ['install'], tool: 'bun' }]);
   });
 
   it('returns cargo fetch for Rust-only', () => {
     const cmds = installCommandsFor({ ...baseOptions, languages: ['rust'] });
-    expect(cmds).toEqual([{ tool: 'cargo', args: ['fetch'] }]);
+    expect(cmds).toEqual([{ args: ['fetch'], tool: 'cargo' }]);
   });
 
   it('returns uv sync for Python-only', () => {
     const cmds = installCommandsFor({ ...baseOptions, languages: ['python'] });
-    expect(cmds).toEqual([{ tool: 'uv', args: ['sync'] }]);
+    expect(cmds).toEqual([{ args: ['sync'], tool: 'uv' }]);
   });
 
   it('chains pnpm install + cargo fetch + uv sync for full polyglot', () => {
@@ -62,10 +62,10 @@ describe('installCommandsFor', () => {
       rustWorkspace: true,
     });
     expect(cmds).toEqual([
-      { tool: 'pnpm', args: ['install'] },
-      { tool: 'pnpm', args: ['exec', 'vp', 'config'] },
-      { tool: 'cargo', args: ['fetch'] },
-      { tool: 'uv', args: ['sync'] },
+      { args: ['install'], tool: 'pnpm' },
+      { args: ['exec', 'vp', 'config'], tool: 'pnpm' },
+      { args: ['fetch'], tool: 'cargo' },
+      { args: ['sync'], tool: 'uv' },
     ]);
   });
 
@@ -77,9 +77,9 @@ describe('installCommandsFor', () => {
       rustWorkspace: false,
     });
     expect(cmds).toEqual([
-      { tool: 'pnpm', args: ['install'] },
-      { tool: 'pnpm', args: ['exec', 'vp', 'config'] },
-      // no cargo fetch
+      { args: ['install'], tool: 'pnpm' },
+      { args: ['exec', 'vp', 'config'], tool: 'pnpm' },
+      // No cargo fetch
     ]);
   });
 
@@ -90,6 +90,6 @@ describe('installCommandsFor', () => {
       monorepo: 'turbo',
       rustWorkspace: true,
     });
-    expect(cmds).toContainEqual({ tool: 'cargo', args: ['fetch'] });
+    expect(cmds).toContainEqual({ args: ['fetch'], tool: 'cargo' });
   });
 });

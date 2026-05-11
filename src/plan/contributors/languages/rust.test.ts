@@ -1,28 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Options } from '../../../options.js';
-import { rustContributor } from './rust.js';
+import rustContributor from './rust.js';
 
 const baseOptions: Options = {
-  name: 'foo',
-  description: '',
-  cwd: '/tmp',
-  languages: ['rust'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: '',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['rust'],
+  monorepo: 'none',
+  name: 'foo',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
-describe('rustContributor', () => {
+describe(rustContributor, () => {
   it('returns empty contribution when rust is not in languages', () => {
     const contribution = rustContributor({ ...baseOptions, languages: ['typescript'] });
     expect(contribution.files).toHaveLength(0);
@@ -30,7 +30,7 @@ describe('rustContributor', () => {
 
   it('contributes Cargo.toml + src/main.rs + rustfmt + clippy at root for single-crate', () => {
     const contribution = rustContributor(baseOptions);
-    const targets = contribution.files.map((f) => f.target);
+    const targets = contribution.files.map((file) => file.target);
     expect(targets).toContain('Cargo.toml');
     expect(targets).toContain('src/main.rs');
     expect(targets).toContain('rustfmt.toml');
@@ -40,8 +40,8 @@ describe('rustContributor', () => {
 
   it('contributes workspace Cargo.toml + crates/<name>/ when rustWorkspace is true', () => {
     const contribution = rustContributor({ ...baseOptions, rustWorkspace: true });
-    const targets = contribution.files.map((f) => f.target);
-    expect(targets).toContain('Cargo.toml'); // workspace root
+    const targets = contribution.files.map((file) => file.target);
+    expect(targets).toContain('Cargo.toml'); // Workspace root
     expect(targets).toContain('crates/foo/Cargo.toml');
     expect(targets).toContain('crates/foo/src/main.rs');
     expect(targets).toContain('rustfmt.toml');
@@ -50,7 +50,7 @@ describe('rustContributor', () => {
 
   it('emits the workspace-Cargo.toml template at root when rustWorkspace is true', () => {
     const contribution = rustContributor({ ...baseOptions, rustWorkspace: true });
-    const rootCargo = contribution.files.find((f) => f.target === 'Cargo.toml');
+    const rootCargo = contribution.files.find((file) => file.target === 'Cargo.toml');
     expect(rootCargo?.template).toBe('rust/workspace-Cargo.toml.tmpl');
   });
 
@@ -61,10 +61,10 @@ describe('rustContributor', () => {
       monorepo: 'turbo',
     };
     const contribution = rustContributor(polyglotOpts);
-    const targets = contribution.files.map((f) => f.target);
+    const targets = contribution.files.map((file) => file.target);
     expect(targets).toContain('crates/foo/Cargo.toml');
     expect(targets).toContain('crates/foo/src/main.rs');
-    expect(targets).not.toContain('Cargo.toml'); // no workspace root because rustWorkspace is false
+    expect(targets).not.toContain('Cargo.toml'); // No workspace root because rustWorkspace is false
   });
 
   it('emits both crates/<name>/ AND workspace root in polyglot + rustWorkspace mode', () => {
@@ -75,7 +75,7 @@ describe('rustContributor', () => {
       rustWorkspace: true,
     };
     const contribution = rustContributor(polyglotOpts);
-    const targets = contribution.files.map((f) => f.target);
+    const targets = contribution.files.map((file) => file.target);
     expect(targets).toContain('Cargo.toml');
     expect(targets).toContain('crates/foo/Cargo.toml');
   });

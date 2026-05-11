@@ -1,29 +1,31 @@
 import type { Options } from '../../options.js';
-import { renderMonorepoPackageJson } from '../../scaffold/generators/monorepoPackageJson.js';
+import renderMonorepoPackageJson from '../../scaffold/generators/monorepo-package-json.js';
 import type { Contribution, FilePlan } from '../contributors.js';
 
-export const monorepoContributor = (opts: Options): Contribution => {
+const monorepoContributor = (opts: Options): Contribution => {
   if (opts.monorepo === 'none') {
-    return { files: [], postSteps: [], deps: {} };
+    return { deps: {}, files: [], postSteps: [] };
   }
 
   const files: FilePlan[] = [
-    { target: 'package.json', content: renderMonorepoPackageJson(opts), raw: true },
+    { content: renderMonorepoPackageJson(opts), raw: true, target: 'package.json' },
   ];
 
   if (opts.monorepo === 'turbo') {
-    files.push({ template: 'monorepo/turbo.json.tmpl', target: 'turbo.json' });
+    files.push({ target: 'turbo.json', template: 'monorepo/turbo.json.tmpl' });
   } else if (opts.monorepo === 'nx') {
-    files.push({ template: 'monorepo/nx.json.tmpl', target: 'nx.json' });
+    files.push({ target: 'nx.json', template: 'monorepo/nx.json.tmpl' });
   }
 
   if (opts.packageManager === 'pnpm') {
-    files.push({ template: 'monorepo/pnpm-workspace.yaml.tmpl', target: 'pnpm-workspace.yaml' });
+    files.push({ target: 'pnpm-workspace.yaml', template: 'monorepo/pnpm-workspace.yaml.tmpl' });
   }
 
   return {
+    deps: {},
     files,
     postSteps: [],
-    deps: {},
   };
 };
+
+export default monorepoContributor;

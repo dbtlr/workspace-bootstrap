@@ -1,12 +1,12 @@
 import type { Options } from '../../../options.js';
-import { renderPackageJson } from '../../../scaffold/generators/packageJson.js';
-import { renderViteConfig } from '../../../scaffold/generators/viteConfig.js';
+import renderPackageJson from '../../../scaffold/generators/package-json.js';
+import renderViteConfig from '../../../scaffold/generators/vite-config.js';
 import type { Contribution, FilePlan, PkgDeps } from '../../contributors.js';
 import { getSubPath } from '../../sub-paths.js';
 
-export const tsContributor = (opts: Options): Contribution => {
+const tsContributor = (opts: Options): Contribution => {
   if (!opts.languages.includes('typescript')) {
-    return { files: [], postSteps: [], deps: {} };
+    return { deps: {}, files: [], postSteps: [] };
   }
 
   const subPath = getSubPath('typescript', opts);
@@ -19,20 +19,22 @@ export const tsContributor = (opts: Options): Contribution => {
   };
 
   const files: FilePlan[] = [
-    { template: 'ts/tsconfig.json.tmpl', target: `${prefix}tsconfig.json` },
-    { template: 'ts/src/index.ts.tmpl', target: `${prefix}src/index.ts` },
-    { template: 'ts/tests/smoke.test.ts.tmpl', target: `${prefix}tests/smoke.test.ts` },
+    { target: `${prefix}tsconfig.json`, template: 'ts/tsconfig.json.tmpl' },
+    { target: `${prefix}src/index.ts`, template: 'ts/src/index.ts.tmpl' },
+    { target: `${prefix}tests/smoke.test.ts`, template: 'ts/tests/smoke.test.ts.tmpl' },
     {
-      target: `${prefix}package.json`,
       content: renderPackageJson(opts, contributedDeps),
       raw: true,
+      target: `${prefix}package.json`,
     },
-    { target: `${prefix}vite.config.ts`, content: renderViteConfig(opts), raw: true },
+    { content: renderViteConfig(opts), raw: true, target: `${prefix}vite.config.ts` },
   ];
 
   return {
+    deps: { ts: contributedDeps },
     files,
     postSteps: [],
-    deps: { ts: contributedDeps },
   };
 };
+
+export default tsContributor;

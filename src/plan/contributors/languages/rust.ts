@@ -2,9 +2,9 @@ import type { Options } from '../../../options.js';
 import type { Contribution, FilePlan } from '../../contributors.js';
 import { getSubPath } from '../../sub-paths.js';
 
-export const rustContributor = (opts: Options): Contribution => {
+const rustContributor = (opts: Options): Contribution => {
   if (!opts.languages.includes('rust')) {
-    return { files: [], postSteps: [], deps: {} };
+    return { deps: {}, files: [], postSteps: [] };
   }
 
   const subPath = getSubPath('rust', opts);
@@ -15,20 +15,20 @@ export const rustContributor = (opts: Options): Contribution => {
 
   // Always emit fmt/clippy at repo root
   files.push(
-    { template: 'rust/rustfmt.toml', target: 'rustfmt.toml' },
-    { template: 'rust/clippy.toml', target: 'clippy.toml' },
+    { target: 'rustfmt.toml', template: 'rust/rustfmt.toml' },
+    { target: 'clippy.toml', template: 'rust/clippy.toml' },
   );
 
   // Optionally emit workspace-root Cargo.toml
   if (emitWorkspaceRoot) {
-    files.push({ template: 'rust/workspace-Cargo.toml.tmpl', target: 'Cargo.toml' });
+    files.push({ target: 'Cargo.toml', template: 'rust/workspace-Cargo.toml.tmpl' });
   }
 
   // Emit the crate (at root for single-crate, under crates/<name>/ otherwise)
   const cratePath = isWorkspaceLayout ? `${subPath}/` : '';
   files.push(
-    { template: 'rust/Cargo.toml.tmpl', target: `${cratePath}Cargo.toml` },
-    { template: 'rust/src/main.rs.tmpl', target: `${cratePath}src/main.rs` },
+    { target: `${cratePath}Cargo.toml`, template: 'rust/Cargo.toml.tmpl' },
+    { target: `${cratePath}src/main.rs`, template: 'rust/src/main.rs.tmpl' },
   );
 
   // Sanity check: if rustWorkspace=true the crate must be under crates/<name>/
@@ -37,8 +37,10 @@ export const rustContributor = (opts: Options): Contribution => {
   }
 
   return {
+    deps: {},
     files,
     postSteps: [],
-    deps: {},
   };
 };
+
+export default rustContributor;

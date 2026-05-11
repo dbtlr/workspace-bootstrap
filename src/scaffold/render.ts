@@ -14,30 +14,38 @@ export type RenderContext = {
   options: Options;
 };
 
+export type RenderFileOptions = {
+  author?: { name: string; email: string };
+  templatesRoot: string;
+};
+
 const eta = new Eta({ autoEscape: false, useWith: false });
 
 export const buildRenderContext = (
   opts: Options,
   author: { name: string; email: string },
 ): RenderContext => ({
-  name: opts.name,
-  description: opts.description,
   author,
-  year: new Date().getFullYear(),
+  description: opts.description,
+  name: opts.name,
   options: opts,
+  year: new Date().getFullYear(),
 });
 
 export const renderFile = async (
   plan: FilePlan,
   opts: Options,
-  templatesRoot: string,
-  author: { name: string; email: string } = { name: '', email: '' },
+  renderOpts: RenderFileOptions,
 ): Promise<string> => {
+  const { templatesRoot } = renderOpts;
+  const author = renderOpts.author ?? { email: '', name: '' };
+
   if (plan.compose) {
     const parts: string[] = [];
     for (const fragment of plan.compose.fragments) {
       const fragPath = join(templatesRoot, 'fragments', fragment);
       try {
+        // eslint-disable-next-line no-await-in-loop
         parts.push(await readFile(fragPath, 'utf8'));
       } catch {
         // Missing fragment: skip silently. Matches the prior shared-contributor behavior.

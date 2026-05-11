@@ -5,39 +5,39 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import type { Options } from '../../src/options.js';
-import { rustContributor } from '../../src/plan/contributors/languages/rust.js';
-import { monorepoContributor } from '../../src/plan/contributors/monorepo.js';
-import { sharedContributor } from '../../src/plan/contributors/shared.js';
+import rustContributor from '../../src/plan/contributors/languages/rust.js';
+import monorepoContributor from '../../src/plan/contributors/monorepo.js';
+import sharedContributor from '../../src/plan/contributors/shared.js';
 import { buildPlan } from '../../src/plan/index.js';
 import { executePlan } from '../../src/scaffold/index.js';
 
 const baseOpts: Options = {
-  name: 'rusty',
-  description: 'A Rust demo',
-  cwd: '/tmp',
-  languages: ['rust'],
-  packageManager: 'pnpm',
   bunTest: 'vitest',
-  monorepo: 'none',
-  rustWorkspace: false,
-  pythonWorkspace: false,
   ci: false,
+  commit: true,
+  cwd: '/tmp',
+  description: 'A Rust demo',
+  git: true,
   github: false,
   githubVisibility: 'private',
-  git: true,
-  commit: true,
   install: true,
+  languages: ['rust'],
+  monorepo: 'none',
+  name: 'rusty',
+  packageManager: 'pnpm',
+  pythonWorkspace: false,
+  rustWorkspace: false,
   verbose: false,
 };
 
 const contributors = [sharedContributor, monorepoContributor, rustContributor];
 
-describe('Rust-only end-to-end scaffold', () => {
+describe('rust-only end-to-end scaffold', () => {
   it('single-crate produces Cargo.toml + src/main.rs at root', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'rust-single-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
-    await executePlan(plan, target, { ...baseOpts, cwd });
+    await executePlan(plan, { ...baseOpts, cwd }, { targetDir: target });
 
     expect(existsSync(join(target, 'Cargo.toml'))).toBe(true);
     expect(existsSync(join(target, 'src/main.rs'))).toBe(true);
@@ -47,11 +47,11 @@ describe('Rust-only end-to-end scaffold', () => {
     expect(existsSync(join(target, 'AGENTS.md'))).toBe(true);
   });
 
-  it('Cargo.toml has the project name interpolated', async () => {
+  it('cargo.toml has the project name interpolated', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'rust-single-'));
     const target = join(cwd, baseOpts.name);
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
-    await executePlan(plan, target, { ...baseOpts, cwd });
+    await executePlan(plan, { ...baseOpts, cwd }, { targetDir: target });
 
     const cargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     expect(cargo).toContain('name = "rusty"');
@@ -62,7 +62,7 @@ describe('Rust-only end-to-end scaffold', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'rust-ws-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, contributors);
-    await executePlan(plan, target, { ...opts, cwd });
+    await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
     const rootCargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     expect(rootCargo).toContain('[workspace]');

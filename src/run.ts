@@ -2,15 +2,16 @@ import { existsSync, statSync } from 'node:fs';
 import { isAbsolute, join, resolve } from 'node:path';
 
 import type { Options, PartialOptions } from './options.js';
-import { pythonContributor } from './plan/contributors/languages/python.js';
-import { rustContributor } from './plan/contributors/languages/rust.js';
-import { tsContributor } from './plan/contributors/languages/ts.js';
-import { monorepoContributor } from './plan/contributors/monorepo.js';
-import { sharedContributor } from './plan/contributors/shared.js';
+import pythonContributor from './plan/contributors/languages/python.js';
+import rustContributor from './plan/contributors/languages/rust.js';
+import tsContributor from './plan/contributors/languages/ts.js';
+import monorepoContributor from './plan/contributors/monorepo.js';
+import sharedContributor from './plan/contributors/shared.js';
 import { buildPlan } from './plan/index.js';
-import { runGit } from './post/git.js';
+import runGit from './post/git.js';
 import { runInstall } from './post/install.js';
-import { runPrompts, type RunPromptsOptions } from './prompts/index.js';
+import { runPrompts } from './prompts/index.js';
+import type { RunPromptsOptions } from './prompts/index.js';
 import { executePlan } from './scaffold/index.js';
 import { exec as nodeExec } from './util/exec.js';
 import { createLogger } from './util/log.js';
@@ -19,8 +20,8 @@ const detectAuthor = async (cwd: string): Promise<{ name: string; email: string 
   const nameResult = await nodeExec('git', ['config', 'user.name'], { cwd });
   const emailResult = await nodeExec('git', ['config', 'user.email'], { cwd });
   return {
-    name: nameResult.stdout.trim(),
     email: emailResult.stdout.trim(),
+    name: nameResult.stdout.trim(),
   };
 };
 
@@ -36,13 +37,10 @@ const validateCwdAndTarget = (cwd: string, name: string): string => {
   return target;
 };
 
-export const run = async (
-  partial: PartialOptions,
-  promptOpts: RunPromptsOptions,
-): Promise<void> => {
+const run = async (partial: PartialOptions, promptOpts: RunPromptsOptions): Promise<void> => {
   const log = createLogger(Boolean(partial.verbose));
 
-  const isTty = process.stdin.isTTY === true;
+  const isTty = process.stdin.isTTY;
   const effective: RunPromptsOptions = {
     nonInteractive: promptOpts.nonInteractive || !isTty,
     yes: promptOpts.yes,
@@ -62,7 +60,7 @@ export const run = async (
   ]);
 
   log.info(`Scaffolding ${opts.name} → ${targetDir}`);
-  await executePlan(plan, targetDir, opts, { author });
+  await executePlan(plan, opts, { author, targetDir });
   log.success(`Wrote ${plan.files.length} files.`);
 
   if (opts.git) {
@@ -74,3 +72,5 @@ export const run = async (
 
   log.success(`Done. cd ${opts.name}`);
 };
+
+export default run;
