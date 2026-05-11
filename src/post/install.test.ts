@@ -58,6 +58,7 @@ describe("installCommandsFor", () => {
       ...baseOptions,
       languages: ["typescript", "rust", "python"],
       monorepo: "turbo",
+      rustWorkspace: true,
     });
     expect(cmds).toEqual([
       { tool: "pnpm", args: ["install"] },
@@ -65,5 +66,29 @@ describe("installCommandsFor", () => {
       { tool: "cargo", args: ["fetch"] },
       { tool: "uv", args: ["sync"] },
     ]);
+  });
+
+  it("skips cargo fetch in polyglot+rust without rustWorkspace (no root Cargo.toml)", () => {
+    const cmds = installCommandsFor({
+      ...baseOptions,
+      languages: ["typescript", "rust"],
+      monorepo: "turbo",
+      rustWorkspace: false,
+    });
+    expect(cmds).toEqual([
+      { tool: "pnpm", args: ["install"] },
+      { tool: "pnpm", args: ["exec", "vp", "config"] },
+      // no cargo fetch
+    ]);
+  });
+
+  it("includes cargo fetch in polyglot+rust when rustWorkspace is true", () => {
+    const cmds = installCommandsFor({
+      ...baseOptions,
+      languages: ["typescript", "rust"],
+      monorepo: "turbo",
+      rustWorkspace: true,
+    });
+    expect(cmds).toContainEqual({ tool: "cargo", args: ["fetch"] });
   });
 });

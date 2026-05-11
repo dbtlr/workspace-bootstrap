@@ -1,6 +1,7 @@
 import type { Options } from "../options.js";
 import { exec, which } from "../util/exec.js";
 import type { Logger } from "../util/log.js";
+import { isPolyglot } from "../plan/sub-paths.js";
 
 export type InstallCommand = { tool: string; args: string[] };
 
@@ -17,7 +18,10 @@ export const installCommandsFor = (opts: Options): InstallCommand[] => {
   }
 
   if (opts.languages.includes("rust")) {
-    cmds.push({ tool: "cargo", args: ["fetch"] });
+    const hasRootCargoToml = opts.rustWorkspace || !isPolyglot(opts);
+    if (hasRootCargoToml) {
+      cmds.push({ tool: "cargo", args: ["fetch"] });
+    }
   }
 
   if (opts.languages.includes("python")) {
