@@ -1,0 +1,30 @@
+# <%= it.name %>
+
+<%= it.description %>
+
+## Stack
+
+<% if (it.options.languages.includes('typescript')) { %>- TypeScript via Vite+ (oxlint, oxfmt, vitest, tsdown), package manager: <%= it.options.packageManager %>
+<% } %>
+<% if (it.options.languages.includes('rust')) { %>- Rust via cargo<% if (it.options.rustWorkspace) { %> (workspace mode)<% } %>
+<% } %>
+<% if (it.options.languages.includes('python')) { %>- Python via uv (ruff, pytest)<% if (it.options.pythonWorkspace) { %> (workspace mode)<% } %>
+<% } %>
+
+## Commands
+
+<% if (it.options.languages.includes('typescript')) { %>- `<%= it.options.packageManager %> check` — run lint, format, typecheck
+- `<%= it.options.packageManager %> test` — run tests
+- `<%= it.options.packageManager %> build` — build the project
+<% } %>
+<% if (it.options.languages.includes('rust')) { %>- `cargo check` / `cargo test` / `cargo build`
+<% } %>
+<% if (it.options.languages.includes('python')) { %>- `uv run ruff check` / `uv run pytest`
+<% } %>
+
+## Code conventions
+
+- TDD: failing test → minimal implementation → passing test → commit.
+- Treat all linter warnings as errors.
+- Keep functions small and focused.
+- Document architecture in `docs/architecture/` when adding subsystems.

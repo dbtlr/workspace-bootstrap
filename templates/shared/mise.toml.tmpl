@@ -1,0 +1,10 @@
+[tools]
+<% if (it.options.languages.includes('typescript')) { %>node = "22"
+<% if (it.options.packageManager === 'pnpm') { %>pnpm = "10"
+<% } %><% if (it.options.packageManager === 'bun') { %>bun = "1"
+<% } %><% } %>
+<% if (it.options.languages.includes('rust')) { %>rust = "1.83"
+<% } %>
+<% if (it.options.languages.includes('python')) { %>python = "3.13"
+uv = "latest"
+<% } %>

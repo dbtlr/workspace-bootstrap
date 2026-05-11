@@ -14,6 +14,9 @@ export default defineConfig({
       typeCheck: true,
     },
   },
+  fmt: {
+    ignorePatterns: ["dist/**", "templates/**"],
+  },
   staged: {
     "*.{ts,tsx,js,mjs}": "vp check --fix",
   },

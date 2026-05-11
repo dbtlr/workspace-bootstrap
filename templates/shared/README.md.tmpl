@@ -1,0 +1,27 @@
+# <%= it.name %>
+
+<%= it.description %>
+
+## Getting started
+
+<% if (it.options.languages.includes('typescript')) { %>
+```bash
+<%= it.options.packageManager %> install
+<%= it.options.packageManager %> dev
+```
+<% } %>
+<% if (it.options.languages.includes('rust')) { %>
+```bash
+cargo run
+```
+<% } %>
+<% if (it.options.languages.includes('python')) { %>
+```bash
+uv sync
+uv run python -m <%= it.name.replace(/-/g, '_') %>
+```
+<% } %>
+
+## Tooling
+
+This workspace was bootstrapped with [`create-workspace`](https://www.npmjs.com/package/create-workspace).
