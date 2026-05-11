@@ -77,10 +77,37 @@ describe('renderFile', () => {
     expect(result).toBe('literal content');
   });
 
-  it('throws when neither template nor content is set', async () => {
+  it('throws when neither template, content, nor compose is set', async () => {
     await expect(renderFile({ target: 'foo.txt' }, baseOptions, tmpRoot)).rejects.toThrow(
-      /neither template nor content/,
+      /neither template, content, nor compose/,
     );
+  });
+
+  it('composes content from fragments under templates/fragments/', async () => {
+    const { mkdirSync, writeFileSync } = await import('node:fs');
+    mkdirSync(join(tmpRoot, 'fragments'), { recursive: true });
+    writeFileSync(join(tmpRoot, 'fragments', 'one'), 'first\n');
+    writeFileSync(join(tmpRoot, 'fragments', 'two'), 'second\n');
+
+    const result = await renderFile(
+      { target: '.gitignore', compose: { fragments: ['one', 'two'] }, raw: true },
+      baseOptions,
+      tmpRoot,
+    );
+    expect(result).toBe('first\n\nsecond\n');
+  });
+
+  it('compose silently skips missing fragments', async () => {
+    const { mkdirSync, writeFileSync } = await import('node:fs');
+    mkdirSync(join(tmpRoot, 'fragments'), { recursive: true });
+    writeFileSync(join(tmpRoot, 'fragments', 'only'), 'present\n');
+
+    const result = await renderFile(
+      { target: '.gitignore', compose: { fragments: ['only', 'missing'] }, raw: true },
+      baseOptions,
+      tmpRoot,
+    );
+    expect(result).toBe('present\n');
   });
 
   it('skips eta when raw is true even for a .tmpl file', async () => {

@@ -33,11 +33,24 @@ export const renderFile = async (
   templatesRoot: string,
   author: { name: string; email: string } = { name: '', email: '' },
 ): Promise<string> => {
+  if (plan.compose) {
+    const parts: string[] = [];
+    for (const fragment of plan.compose.fragments) {
+      const fragPath = join(templatesRoot, 'fragments', fragment);
+      try {
+        parts.push(await readFile(fragPath, 'utf8'));
+      } catch {
+        // Missing fragment: skip silently. Matches the prior shared-contributor behavior.
+      }
+    }
+    return parts.join('\n');
+  }
+
   if (plan.content !== undefined) {
     return plan.content;
   }
   if (!plan.template) {
-    throw new Error(`FilePlan for ${plan.target} has neither template nor content`);
+    throw new Error(`FilePlan for ${plan.target} has neither template, content, nor compose`);
   }
 
   const fullPath = join(templatesRoot, plan.template);

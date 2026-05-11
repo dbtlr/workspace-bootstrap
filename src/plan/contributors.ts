@@ -5,6 +5,12 @@ export type FilePlan = {
   template?: string;
   /** Raw content to write — used by programmatic generators instead of `template`. */
   content?: string;
+  /**
+   * Compose the output by concatenating fragments from `templates/fragments/`.
+   * Fragment file names are paths relative to that directory. Missing fragments
+   * are silently skipped. Fragments are joined with `\n`. Always treated as raw.
+   */
+  compose?: { fragments: string[] };
   /** Output path relative to the target dir, e.g. `'README.md'`. */
   target: string;
   /** If true, content should be treated as already-final (skip eta). Defaults based on file ext. */
