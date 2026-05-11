@@ -47,9 +47,15 @@ export const renderPackageJson = (opts: Options, contributed: PkgDeps): string =
     scripts,
     dependencies,
     devDependencies,
-    packageManager: opts.packageManager === "pnpm" ? `pnpm@${PNPM_VERSION}` : `bun@${BUN_VERSION}`,
-    engines: { node: ">=22" },
   };
+
+  // packageManager and engines belong on the root package.json only.
+  // In monorepo mode, the monorepo root carries them; this is a workspace member.
+  if (opts.monorepo === "none") {
+    pkg.packageManager =
+      opts.packageManager === "pnpm" ? `pnpm@${PNPM_VERSION}` : `bun@${BUN_VERSION}`;
+    pkg.engines = { node: ">=22" };
+  }
 
   return `${JSON.stringify(pkg, null, 2)}\n`;
 };
