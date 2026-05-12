@@ -1,10 +1,22 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
-.DS_Store
+.vite/
+coverage/
+
+# Env & secrets
 .env*
-.worktrees/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Agent / editor state
 CLAUDE.local.md
 .claude/settings.local.json
-*.log
-coverage/
-.vite/
+.claude/worktrees
+.worktrees/
