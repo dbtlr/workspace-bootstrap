@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { defineCommand, runMain } from 'citty';
 
-import VERSION from './index.js';
+import { version } from '../package.json' with { type: 'json' };
 import type { Language, PartialOptions } from './options.js';
 import run from './run.js';
 
@@ -44,7 +44,7 @@ const main = defineCommand({
   meta: {
     description: 'Scaffold a new workspace with modern TS/Rust/Python tooling.',
     name: 'create-workspace',
-    version: VERSION,
+    version,
   },
   async run({ args }) {
     const flagsAsPartial = parseFlags(args);
