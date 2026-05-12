@@ -40,11 +40,13 @@ describe(renderViteConfig, () => {
     expect(out).not.toContain('staged:');
   });
 
-  it('includes an fmt block with printWidth and singleQuote', () => {
+  it('includes an fmt block with ignorePatterns, singleQuote, and sort options', () => {
     const out = renderViteConfig(baseOptions);
     expect(out).toContain('fmt:');
-    expect(out).toContain('printWidth: 100');
     expect(out).toContain('singleQuote: true');
+    expect(out).toContain('sortImports: true');
+    expect(out).toContain('sortPackageJson: true');
+    expect(out).toContain("'pnpm-lock.yaml'");
   });
 
   it('includes the full lint rule set (plugins, categories, jest-off, env, options)', () => {
