@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 
 import type { Options } from '../../options.js';
 import type { PkgDeps } from '../../plan/contributors.js';

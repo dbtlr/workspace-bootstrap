@@ -1,9 +1,25 @@
 #!/usr/bin/env node
+import { readFileSync } from 'node:fs';
+
 import { defineCommand, runMain } from 'citty';
 
-import { version } from '../package.json' with { type: 'json' };
 import type { Language, PartialOptions } from './options.js';
 import run from './run.js';
+
+function getPackageVersion(): string {
+  try {
+    // Attempt to read version from package.json
+    const pkgPath = new URL('../package.json', import.meta.url);
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+    if (typeof pkg.version === 'string') {
+      return pkg.version;
+    }
+  } catch {
+    // If any error occurs (e.g., file not found), fall back to default version
+  }
+
+  return '0.0.0';
+}
 
 const main = defineCommand({
   args: {
@@ -44,7 +60,7 @@ const main = defineCommand({
   meta: {
     description: 'Scaffold a new workspace with modern TS/Rust/Python tooling.',
     name: 'create-workspace',
-    version,
+    version: getPackageVersion(),
   },
   async run({ args }) {
     const flagsAsPartial = parseFlags(args);

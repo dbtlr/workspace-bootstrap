@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 
 import type { Options } from '../../options.js';
 import renderMonorepoPackageJson from './monorepo-package-json.js';
