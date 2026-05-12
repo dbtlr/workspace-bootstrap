@@ -25,8 +25,8 @@ const baseOptions: Options = {
 describe(buildPlan, () => {
   it('returns a Plan with empty contributions when no contributors registered', () => {
     const plan = buildPlan(baseOptions, []);
-    expect(plan.files).toEqual([]);
-    expect(plan.postSteps).toEqual([]);
+    expect(plan.files).toStrictEqual([]);
+    expect(plan.postSteps).toStrictEqual([]);
   });
 
   it('merges file plans from multiple contributors', () => {
@@ -52,7 +52,7 @@ describe(buildPlan, () => {
       () => ({ deps: { ts: { dependencies: { zod: '^4.0.0' } } }, files: [], postSteps: [] }),
       () => ({ deps: { ts: { dependencies: { citty: '^0.1.0' } } }, files: [], postSteps: [] }),
     ]);
-    expect(plan.deps.ts?.dependencies).toEqual({
+    expect(plan.deps.ts?.dependencies).toStrictEqual({
       citty: '^0.1.0',
       zod: '^4.0.0',
     });

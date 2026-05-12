@@ -54,6 +54,7 @@ describe(executePlan, () => {
     expect(readFileSync(join(targetDir, 'src/util/foo.ts'), 'utf8')).toBe('export {}');
   });
 
+  // oxlint-disable-next-line jest/prefer-ending-with-an-expect
   it('creates CLAUDE.md as a symlink to AGENTS.md', async () => {
     const targetDir = mkdtempSync(join(tmpdir(), 'exec-plan-'));
     const plan: Plan = {
@@ -70,9 +71,11 @@ describe(executePlan, () => {
     const stat = lstatSync(claudeMdPath);
     if (stat.isSymbolicLink()) {
       const target = readlinkSync(claudeMdPath);
+      // oxlint-disable-next-line jest/no-conditional-expect
       expect(target).toBe('AGENTS.md');
     } else {
       // Symlink fallback path — confirm the file has the import-syntax content.
+      // oxlint-disable-next-line jest/no-conditional-expect
       expect(readFileSync(claudeMdPath, 'utf8')).toBe('@AGENTS.md\n');
     }
   });

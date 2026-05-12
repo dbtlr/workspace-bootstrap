@@ -2,15 +2,28 @@ import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
   fmt: {
-    ignorePatterns: ['dist/**', 'templates/**'],
-    printWidth: 100,
+    ignorePatterns: [
+      'pnpm-lock.yaml',
+      'dist/**',
+      'build/**',
+      'node_modules/**',
+      '.docs/**',
+      '.agents/**',
+      '.codex/**',
+      '.turbo/**',
+      '.vite-hooks/**',
+      '.worktrees/**',
+      '.claude/**',
+      '.vscode/**',
+      'coverage/**',
+      'templates/**',
+    ],
     singleQuote: true,
-    sortImports: {
-      ignoreCase: true,
-      ignoreDeclarationSort: false,
-      memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-    },
+    sortImports: true,
+
+    sortPackageJson: true,
   },
+
   lint: {
     categories: {
       correctness: 'error',
@@ -21,57 +34,83 @@ export default defineConfig({
       style: 'warn',
       suspicious: 'error',
     },
-    ignorePatterns: ['dist/**', 'templates/**'],
+
+    env: {
+      builtin: true,
+    },
+
+    ignorePatterns: [
+      'bun.lock',
+      '.vscode',
+      'node_modules',
+      '.agents',
+      '.codex',
+      'build',
+      'dist',
+      '.turbo',
+      '.vite-hooks',
+      'coverage',
+      'templates',
+    ],
+
     options: {
+      denyWarnings: true,
+      maxWarnings: 0,
       typeAware: true,
       typeCheck: true,
     },
-    overrides: [
-      {
-        files: ['**/*.test.ts'],
-        rules: {
-          'max-statements': 'off',
-          'vitest/no-importing-vitest-globals': 'off',
-        },
-      },
-    ],
-    plugins: ['eslint', 'typescript', 'oxc', 'import', 'unicorn', 'promise', 'node', 'vitest'],
-    // Jest/* rules are off because this is a vitest project.
+
+    plugins: ['typescript', 'import', 'eslint', 'unicorn', 'oxc', 'promise', 'node', 'vitest'],
+
     rules: {
-      'import/exports-last': 'off',
+      'capitalized-comments': 'off',
+      'exports-last': 'off',
+      'func-style': [
+        'warn',
+        'declaration',
+        {
+          allowArrowFunctions: true,
+        },
+      ],
+      'id-length': 'off',
       'import/group-exports': 'off',
+      'import/no-named-as-default': 'off',
       'import/no-named-export': 'off',
       'import/no-nodejs-modules': 'off',
-      'jest/max-expects': 'off',
-      'jest/no-conditional-expect': 'off',
+      'import/prefer-default-export': 'off',
       'jest/no-hooks': 'off',
-      'jest/prefer-ending-with-an-expect': 'off',
-      'jest/prefer-strict-equal': 'off',
       'jest/require-hook': 'off',
-      'jest/require-top-level-describe': 'off',
-      'jest/valid-expect': 'off',
       'jest/valid-title': 'off',
-      'max-statements': ['warn', 20],
-      'no-duplicate-imports': ['warn', { allowSeparateTypeImports: true }],
+      'no-continue': 'off',
+      'max-expects': ['warn', { max: 10 }],
+      'max-statements': ['warn', 40],
+
+      'no-duplicate-imports': [
+        'warn',
+        {
+          allowSeparateTypeImports: true,
+        },
+      ],
+
+      'no-explicit-any': 'error',
+
       'no-magic-numbers': 'off',
+
       'no-ternary': 'off',
+
       'sort-imports': 'off',
+
+      'sort-keys': 'off',
+
       'typescript/consistent-type-definitions': ['warn', 'type'],
       'unicorn/no-null': 'off',
-      'vitest/prefer-to-be-falsy': 'off',
-      'vitest/prefer-to-be-truthy': 'off',
+      'vitest/no-importing-vitest-globals': 'off',
+      'vitest/prefer-importing-vitest-globals': 'off',
+      'vitest/prefer-strict-boolean-matchers': 'off',
     },
   },
-  pack: {
-    dts: true,
-    entry: ['src/cli.ts', 'src/index.ts'],
-    format: ['esm'],
-    sourcemap: true,
-  },
+
   staged: {
-    '*.{ts,tsx,js,mjs}': 'vp check --fix',
-  },
-  test: {
-    passWithNoTests: true,
+    '*': 'vp check --fix',
   },
 });

@@ -25,7 +25,7 @@ const baseOptions: Options = {
 describe(installCommandsFor, () => {
   it('returns pnpm install for TS+pnpm', () => {
     const cmds = installCommandsFor(baseOptions);
-    expect(cmds).toEqual([
+    expect(cmds).toStrictEqual([
       { args: ['install'], tool: 'pnpm' },
       { args: ['exec', 'vp', 'config'], tool: 'pnpm' },
     ]);
@@ -33,7 +33,7 @@ describe(installCommandsFor, () => {
 
   it('returns bun install for TS+bun (vitest)', () => {
     const cmds = installCommandsFor({ ...baseOptions, packageManager: 'bun' });
-    expect(cmds).toEqual([
+    expect(cmds).toStrictEqual([
       { args: ['install'], tool: 'bun' },
       { args: ['exec', 'vp', 'config'], tool: 'bun' },
     ]);
@@ -41,17 +41,17 @@ describe(installCommandsFor, () => {
 
   it('omits vp config when bunTest is bun-only', () => {
     const cmds = installCommandsFor({ ...baseOptions, bunTest: 'bun', packageManager: 'bun' });
-    expect(cmds).toEqual([{ args: ['install'], tool: 'bun' }]);
+    expect(cmds).toStrictEqual([{ args: ['install'], tool: 'bun' }]);
   });
 
   it('returns cargo fetch for Rust-only', () => {
     const cmds = installCommandsFor({ ...baseOptions, languages: ['rust'] });
-    expect(cmds).toEqual([{ args: ['fetch'], tool: 'cargo' }]);
+    expect(cmds).toStrictEqual([{ args: ['fetch'], tool: 'cargo' }]);
   });
 
   it('returns uv sync for Python-only', () => {
     const cmds = installCommandsFor({ ...baseOptions, languages: ['python'] });
-    expect(cmds).toEqual([{ args: ['sync'], tool: 'uv' }]);
+    expect(cmds).toStrictEqual([{ args: ['sync'], tool: 'uv' }]);
   });
 
   it('chains pnpm install + cargo fetch + uv sync for full polyglot', () => {
@@ -61,7 +61,7 @@ describe(installCommandsFor, () => {
       monorepo: 'turbo',
       rustWorkspace: true,
     });
-    expect(cmds).toEqual([
+    expect(cmds).toStrictEqual([
       { args: ['install'], tool: 'pnpm' },
       { args: ['exec', 'vp', 'config'], tool: 'pnpm' },
       { args: ['fetch'], tool: 'cargo' },
@@ -76,7 +76,7 @@ describe(installCommandsFor, () => {
       monorepo: 'turbo',
       rustWorkspace: false,
     });
-    expect(cmds).toEqual([
+    expect(cmds).toStrictEqual([
       { args: ['install'], tool: 'pnpm' },
       { args: ['exec', 'vp', 'config'], tool: 'pnpm' },
       // No cargo fetch

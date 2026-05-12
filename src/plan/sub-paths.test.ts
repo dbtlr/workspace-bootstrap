@@ -24,11 +24,11 @@ const baseOptions: Options = {
 
 describe(isPolyglot, () => {
   it('returns false for single language', () => {
-    expect(isPolyglot(baseOptions)).toBe(false);
+    expect(isPolyglot(baseOptions)).toBeFalsy();
   });
 
   it('returns true for 2+ languages', () => {
-    expect(isPolyglot({ ...baseOptions, languages: ['typescript', 'rust'] })).toBe(true);
+    expect(isPolyglot({ ...baseOptions, languages: ['typescript', 'rust'] })).toBeTruthy();
   });
 });
 

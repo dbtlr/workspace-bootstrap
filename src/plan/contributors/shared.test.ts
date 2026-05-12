@@ -37,15 +37,15 @@ describe(sharedContributor, () => {
   it('declares .gitignore as a composition of shared + per-language fragments', () => {
     const ts = sharedContributor({ ...baseOptions, languages: ['typescript'] });
     const tsGitignore = ts.files.find((file) => file.target === '.gitignore');
-    expect(tsGitignore?.compose?.fragments).toEqual(['gitignore.shared', 'gitignore.ts']);
-    expect(tsGitignore?.raw).toBe(true);
+    expect(tsGitignore?.compose?.fragments).toStrictEqual(['gitignore.shared', 'gitignore.ts']);
+    expect(tsGitignore?.raw).toBeTruthy();
   });
 
   it('emits CLAUDE.md as a symlink marker', () => {
     const contribution = sharedContributor(baseOptions);
     const claude = contribution.files.find((file) => file.target === 'CLAUDE.md');
     expect(claude?.content).toBe('@AGENTS.md\n');
-    expect(claude?.raw).toBe(true);
+    expect(claude?.raw).toBeTruthy();
   });
 
   it('declares the Rust gitignore fragment when rust is selected', () => {
@@ -67,7 +67,7 @@ describe(sharedContributor, () => {
       monorepo: 'turbo',
     });
     const gitignore = contribution.files.find((file) => file.target === '.gitignore');
-    expect(gitignore?.compose?.fragments).toEqual([
+    expect(gitignore?.compose?.fragments).toStrictEqual([
       'gitignore.shared',
       'gitignore.ts',
       'gitignore.rust',

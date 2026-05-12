@@ -26,12 +26,12 @@ describe(renderMonorepoPackageJson, () => {
   it('emits a name and private:true', () => {
     const parsed = JSON.parse(renderMonorepoPackageJson(baseOptions));
     expect(parsed.name).toBe('my-mono');
-    expect(parsed.private).toBe(true);
+    expect(parsed.private).toBeTruthy();
   });
 
   it('includes a workspaces array for bun', () => {
     const parsed = JSON.parse(renderMonorepoPackageJson({ ...baseOptions, packageManager: 'bun' }));
-    expect(parsed.workspaces).toEqual(['apps/*', 'packages/*']);
+    expect(parsed.workspaces).toStrictEqual(['apps/*', 'packages/*']);
   });
 
   it('omits workspaces for pnpm (since pnpm-workspace.yaml is separate)', () => {

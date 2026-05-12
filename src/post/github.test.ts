@@ -25,17 +25,17 @@ const baseOptions: Options = {
 describe(githubCommandsFor, () => {
   it('returns empty when github is false', () => {
     const cmds = githubCommandsFor({ ...baseOptions, github: false }, false);
-    expect(cmds).toEqual([]);
+    expect(cmds).toStrictEqual([]);
   });
 
   it('returns empty when a remote already exists (skip, do not overwrite)', () => {
     const cmds = githubCommandsFor(baseOptions, true);
-    expect(cmds).toEqual([]);
+    expect(cmds).toStrictEqual([]);
   });
 
   it('builds gh repo create with --private --source=. --remote=origin --push for default', () => {
     const cmds = githubCommandsFor(baseOptions, false);
-    expect(cmds).toEqual([
+    expect(cmds).toStrictEqual([
       {
         args: [
           'repo',

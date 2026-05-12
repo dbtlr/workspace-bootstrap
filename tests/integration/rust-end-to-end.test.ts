@@ -39,12 +39,12 @@ describe('rust-only end-to-end scaffold', () => {
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, { ...baseOpts, cwd }, { targetDir: target });
 
-    expect(existsSync(join(target, 'Cargo.toml'))).toBe(true);
-    expect(existsSync(join(target, 'src/main.rs'))).toBe(true);
-    expect(existsSync(join(target, 'rustfmt.toml'))).toBe(true);
-    expect(existsSync(join(target, 'clippy.toml'))).toBe(true);
-    expect(existsSync(join(target, 'README.md'))).toBe(true);
-    expect(existsSync(join(target, 'AGENTS.md'))).toBe(true);
+    expect(existsSync(join(target, 'Cargo.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'src/main.rs'))).toBeTruthy();
+    expect(existsSync(join(target, 'rustfmt.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'clippy.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'README.md'))).toBeTruthy();
+    expect(existsSync(join(target, 'AGENTS.md'))).toBeTruthy();
   });
 
   it('cargo.toml has the project name interpolated', async () => {
@@ -66,7 +66,7 @@ describe('rust-only end-to-end scaffold', () => {
 
     const rootCargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     expect(rootCargo).toContain('[workspace]');
-    expect(existsSync(join(target, 'crates/rusty/Cargo.toml'))).toBe(true);
-    expect(existsSync(join(target, 'crates/rusty/src/main.rs'))).toBe(true);
+    expect(existsSync(join(target, 'crates/rusty/Cargo.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'crates/rusty/src/main.rs'))).toBeTruthy();
   });
 });

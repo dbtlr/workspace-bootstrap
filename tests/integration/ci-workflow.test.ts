@@ -49,7 +49,7 @@ describe('ci workflow end-to-end', () => {
     const opts: Options = { ...baseOpts, ci: false, cwd };
     await executePlan(buildPlan(opts, contributors), opts, { targetDir: target });
 
-    expect(existsSync(join(target, '.github/workflows/ci.yml'))).toBe(false);
+    expect(existsSync(join(target, '.github/workflows/ci.yml'))).toBeFalsy();
   });
 
   it('tS-only emits ts workflow with vp commands', async () => {

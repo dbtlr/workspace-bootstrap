@@ -39,10 +39,10 @@ describe('python-only end-to-end scaffold', () => {
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, { ...baseOpts, cwd }, { targetDir: target });
 
-    expect(existsSync(join(target, 'pyproject.toml'))).toBe(true);
-    expect(existsSync(join(target, 'ruff.toml'))).toBe(true);
-    expect(existsSync(join(target, 'src/pythy/__init__.py'))).toBe(true);
-    expect(existsSync(join(target, 'tests/test_smoke.py'))).toBe(true);
+    expect(existsSync(join(target, 'pyproject.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'ruff.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'src/pythy/__init__.py'))).toBeTruthy();
+    expect(existsSync(join(target, 'tests/test_smoke.py'))).toBeTruthy();
   });
 
   it('underscores hyphenated names in the module path', async () => {
@@ -52,7 +52,7 @@ describe('python-only end-to-end scaffold', () => {
     const plan = buildPlan({ ...opts, cwd }, contributors);
     await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
-    expect(existsSync(join(target, 'src/my_py_app/__init__.py'))).toBe(true);
+    expect(existsSync(join(target, 'src/my_py_app/__init__.py'))).toBeTruthy();
   });
 
   it('workspace mode produces workspace pyproject + packages/<name>/', async () => {
@@ -65,8 +65,8 @@ describe('python-only end-to-end scaffold', () => {
     const rootPy = readFileSync(join(target, 'pyproject.toml'), 'utf8');
     expect(rootPy).toContain('[tool.uv.workspace]');
     expect(rootPy).toContain('members = ["packages/*"]');
-    expect(existsSync(join(target, 'packages/pythy/pyproject.toml'))).toBe(true);
-    expect(existsSync(join(target, 'packages/pythy/src/pythy/__init__.py'))).toBe(true);
+    expect(existsSync(join(target, 'packages/pythy/pyproject.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'packages/pythy/src/pythy/__init__.py'))).toBeTruthy();
   });
 
   it('polyglot + pythonWorkspace uses py/* members glob (not packages/*)', async () => {

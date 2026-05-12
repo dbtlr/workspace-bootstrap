@@ -47,15 +47,15 @@ describe('polyglot end-to-end scaffold', () => {
     const plan = buildPlan({ ...baseOpts, cwd }, contributors);
     await executePlan(plan, { ...baseOpts, cwd }, { targetDir: target });
 
-    expect(existsSync(join(target, 'turbo.json'))).toBe(true);
-    expect(existsSync(join(target, 'package.json'))).toBe(true);
-    expect(existsSync(join(target, 'pnpm-workspace.yaml'))).toBe(true);
-    expect(existsSync(join(target, 'apps/multi/package.json'))).toBe(true);
-    expect(existsSync(join(target, 'apps/multi/vite.config.ts'))).toBe(true);
-    expect(existsSync(join(target, 'crates/multi/Cargo.toml'))).toBe(true);
-    expect(existsSync(join(target, 'crates/multi/src/main.rs'))).toBe(true);
-    expect(existsSync(join(target, 'README.md'))).toBe(true);
-    expect(existsSync(join(target, 'AGENTS.md'))).toBe(true);
+    expect(existsSync(join(target, 'turbo.json'))).toBeTruthy();
+    expect(existsSync(join(target, 'package.json'))).toBeTruthy();
+    expect(existsSync(join(target, 'pnpm-workspace.yaml'))).toBeTruthy();
+    expect(existsSync(join(target, 'apps/multi/package.json'))).toBeTruthy();
+    expect(existsSync(join(target, 'apps/multi/vite.config.ts'))).toBeTruthy();
+    expect(existsSync(join(target, 'crates/multi/Cargo.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'crates/multi/src/main.rs'))).toBeTruthy();
+    expect(existsSync(join(target, 'README.md'))).toBeTruthy();
+    expect(existsSync(join(target, 'AGENTS.md'))).toBeTruthy();
   });
 
   it('root package.json has turbo as a devDependency and is private', async () => {
@@ -66,7 +66,7 @@ describe('polyglot end-to-end scaffold', () => {
 
     const rootPkg = JSON.parse(readFileSync(join(target, 'package.json'), 'utf8'));
     expect(rootPkg.name).toBe('multi');
-    expect(rootPkg.private).toBe(true);
+    expect(rootPkg.private).toBeTruthy();
     expect(rootPkg.devDependencies.turbo).toBeDefined();
     expect(rootPkg.packageManager).toMatch(/^pnpm@/);
   });
@@ -88,10 +88,10 @@ describe('polyglot end-to-end scaffold', () => {
     const plan = buildPlan({ ...opts, cwd }, contributors);
     await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
-    expect(existsSync(join(target, 'apps/multi/package.json'))).toBe(true);
-    expect(existsSync(join(target, 'crates/multi/Cargo.toml'))).toBe(true);
-    expect(existsSync(join(target, 'py/multi/pyproject.toml'))).toBe(true);
-    expect(existsSync(join(target, 'py/multi/src/multi/__init__.py'))).toBe(true);
+    expect(existsSync(join(target, 'apps/multi/package.json'))).toBeTruthy();
+    expect(existsSync(join(target, 'crates/multi/Cargo.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'py/multi/pyproject.toml'))).toBeTruthy();
+    expect(existsSync(join(target, 'py/multi/src/multi/__init__.py'))).toBeTruthy();
   });
 
   it('mise.toml includes node, rust, and python for full polyglot', async () => {

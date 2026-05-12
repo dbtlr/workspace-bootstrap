@@ -20,9 +20,9 @@ describe(applyDefaults, () => {
 
   it('defaults git/commit/install to true', () => {
     const out = applyDefaults({ cwd: '/tmp', languages: ['typescript'] });
-    expect(out.git).toBe(true);
-    expect(out.commit).toBe(true);
-    expect(out.install).toBe(true);
+    expect(out.git).toBeTruthy();
+    expect(out.commit).toBeTruthy();
+    expect(out.install).toBeTruthy();
   });
 
   it('preserves explicitly-set values', () => {

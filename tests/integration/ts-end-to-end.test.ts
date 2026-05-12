@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -30,28 +30,25 @@ const opts: Options = {
 };
 
 describe('tS-only end-to-end scaffold', () => {
-  it('produces a complete project structure', async () => {
+  it.each([
+    'README.md',
+    'AGENTS.md',
+    'CLAUDE.md',
+    '.editorconfig',
+    'mise.toml',
+    '.gitignore',
+    'tsconfig.json',
+    'package.json',
+    'vite.config.ts',
+    'src/index.ts',
+    'tests/smoke.test.ts',
+  ])('produces a complete project structure %s', async (file) => {
     const cwd = mkdtempSync(join(tmpdir(), 'e2e-'));
     const target = join(cwd, opts.name);
     const plan = buildPlan({ ...opts, cwd }, [sharedContributor, tsContributor]);
     await executePlan(plan, { ...opts, cwd }, { targetDir: target });
 
-    const expectedFiles = [
-      'README.md',
-      'AGENTS.md',
-      'CLAUDE.md',
-      '.editorconfig',
-      'mise.toml',
-      '.gitignore',
-      'tsconfig.json',
-      'package.json',
-      'vite.config.ts',
-      'src/index.ts',
-      'tests/smoke.test.ts',
-    ];
-    for (const file of expectedFiles) {
-      expect(existsSync(join(target, file)), `missing: ${file}`).toBe(true);
-    }
+    expect(existsSync(join(target, file))).toBeTruthy();
   });
 
   it('package.json is valid JSON with the expected fields', async () => {

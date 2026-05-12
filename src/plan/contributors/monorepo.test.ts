@@ -59,6 +59,6 @@ describe(monorepoContributor, () => {
     const contribution = monorepoContributor({ ...baseOptions, monorepo: 'turbo' });
     const pkg = contribution.files.find((file) => file.target === 'package.json');
     expect(pkg?.content).toBeDefined();
-    expect(pkg?.raw).toBe(true);
+    expect(pkg?.raw).toBeTruthy();
   });
 });

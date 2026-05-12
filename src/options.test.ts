@@ -4,25 +4,25 @@ import { OptionsSchema, validateName } from './options.js';
 
 describe(validateName, () => {
   it('accepts valid npm package names', () => {
-    expect(validateName('my-project').success).toBe(true);
-    expect(validateName('foo123').success).toBe(true);
+    expect(validateName('my-project').success).toBeTruthy();
+    expect(validateName('foo123').success).toBeTruthy();
   });
 
   it('rejects names with uppercase letters', () => {
-    expect(validateName('MyProject').success).toBe(false);
+    expect(validateName('MyProject').success).toBeFalsy();
   });
 
   it('rejects names with leading dot or underscore', () => {
-    expect(validateName('.foo').success).toBe(false);
-    expect(validateName('_foo').success).toBe(false);
+    expect(validateName('.foo').success).toBeFalsy();
+    expect(validateName('_foo').success).toBeFalsy();
   });
 
   it('rejects names longer than 214 chars', () => {
-    expect(validateName('a'.repeat(215)).success).toBe(false);
+    expect(validateName('a'.repeat(215)).success).toBeFalsy();
   });
 
   it('rejects empty names', () => {
-    expect(validateName('').success).toBe(false);
+    expect(validateName('').success).toBeFalsy();
   });
 });
 
@@ -47,7 +47,7 @@ describe(OptionsSchema.parse.bind(OptionsSchema), () => {
       verbose: false,
     });
     expect(result.name).toBe('foo');
-    expect(result.languages).toEqual(['typescript']);
+    expect(result.languages).toStrictEqual(['typescript']);
   });
 
   it('rejects empty languages array', () => {
@@ -69,6 +69,6 @@ describe(OptionsSchema.parse.bind(OptionsSchema), () => {
       rustWorkspace: false,
       verbose: false,
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBeFalsy();
   });
 });

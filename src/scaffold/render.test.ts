@@ -26,12 +26,12 @@ const baseOptions: Options = {
   verbose: false,
 };
 
-let tmpRoot = '';
-beforeEach(() => {
-  tmpRoot = mkdtempSync(join(tmpdir(), 'render-test-'));
-});
-
 describe(renderFile, () => {
+  let tmpRoot = '';
+  beforeEach(() => {
+    tmpRoot = mkdtempSync(join(tmpdir(), 'render-test-'));
+  });
+
   it('returns content verbatim when raw is true', async () => {
     const result = await renderFile(
       { content: 'hello', raw: true, target: 'foo.txt' },
