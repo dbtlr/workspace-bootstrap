@@ -3,7 +3,9 @@ import { defineConfig } from 'vite-plus';
 export default defineConfig({
   pack: {
     entry: ['src/cli.ts'],
-    dts: true,
+    dts: {
+      tsgo: true,
+    },
     format: ['esm'],
   },
   fmt: {
