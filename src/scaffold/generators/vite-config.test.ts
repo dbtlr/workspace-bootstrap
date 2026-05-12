@@ -47,16 +47,18 @@ describe(renderViteConfig, () => {
     expect(out).toContain('singleQuote: true');
   });
 
-  it('includes the full lint rule set (plugins, categories, jest-off, test override)', () => {
+  it('includes the full lint rule set (plugins, categories, jest-off, env, options)', () => {
     const out = renderViteConfig(baseOptions);
     expect(out).toContain(
-      "plugins: ['eslint', 'typescript', 'oxc', 'import', 'unicorn', 'promise', 'node', 'vitest']",
+      "plugins: ['typescript', 'import', 'eslint', 'unicorn', 'oxc', 'promise', 'node', 'vitest']",
     );
     expect(out).toContain('categories:');
     expect(out).toContain("correctness: 'error'");
     expect(out).toContain("'import/no-named-export': 'off'");
     expect(out).toContain("'jest/valid-title': 'off'");
     expect(out).toContain("'vitest/no-importing-vitest-globals': 'off'");
-    expect(out).toContain("files: ['**/*.test.ts']");
+    expect(out).toContain('builtin: true');
+    expect(out).toContain('denyWarnings: true');
+    expect(out).toContain('maxWarnings: 0');
   });
 });
